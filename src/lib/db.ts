@@ -1,3 +1,8 @@
+// Set up Prisma Client
+// Now that you have a database with some initial data, you can set up Prisma Client and connect it to your database.
+// This is given in Docs....
+
+
 import { PrismaClient } from "@/generated/prisma/client";
 import {PrismaPg} from "@prisma/adapter-pg";
 
