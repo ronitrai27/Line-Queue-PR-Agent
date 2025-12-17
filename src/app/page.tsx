@@ -1,11 +1,16 @@
-import { Button } from '@/components/ui/button'
-import React from 'react'
+import { Button } from "@/components/ui/button";
+import Logout from "@/module/auth/components/logout";
+import { requireAuth } from "@/utils/auth-utils";
+import React from "react";
 
-export default function Home() {
+export default async function Home() {
+  await requireAuth();
   return (
     <div>
-      hello
-      <Button>Hello Rox</Button>
+      hello this is home page
+      <Logout>
+        <Button>logout</Button>
+      </Logout>
     </div>
-  )
+  );
 }
