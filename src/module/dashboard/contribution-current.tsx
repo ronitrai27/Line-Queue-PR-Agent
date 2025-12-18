@@ -31,7 +31,7 @@ const ContributionGraphCurrent = () => {
   }
 
   return (
-    <div className="w-full flex flex-col items-center gap-4 p-4">
+    <div className="w-full flex flex-col items-center gap-3">
       <div className="text-sm text-muted-foreground">
         <span>{data.totalContributions} contributions this year</span>
       </div>
@@ -41,9 +41,9 @@ const ContributionGraphCurrent = () => {
           <ActivityCalendar
             data={data.contributionCurrent}
             colorScheme={theme === "dark" ? "dark" : "light"}
-            blockSize={11}
-            blockMargin={4}
-            fontSize={12}
+            blockSize={12}
+            blockMargin={5}
+            fontSize={14}
             showWeekdayLabels
             showMonthLabels
           />

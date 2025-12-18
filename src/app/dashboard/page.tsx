@@ -17,11 +17,18 @@ import {
   getDahboardStats,
   getMonthlyActivity,
 } from "@/module/dashboard";
-import React from "react";
+import React, { useState } from "react";
 import ContributionGraph from "@/module/dashboard/contribution-graph";
 import ContributionGraphCurrent from "@/module/dashboard/contribution-current";
 import { Brain, GitBranch, GitBranchPlus, GitPullRequest } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { LuChartBarIncreasing, LuChevronDown } from "react-icons/lu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const MainPage = () => {
   const { user, session, loading, error } = useAuthUser();
@@ -29,6 +36,8 @@ const MainPage = () => {
   const userName = user?.name || "GUEST";
   const userEmail = user?.email || "";
   const userFirstName = user?.name.split(" ")[0].toUpperCase() || "GUEST";
+
+  const [range, setRange] = useState<"past" | "current">("past");
 
   //=============== QUERY1================
   const { data: stats, isLoading } = useQuery({
@@ -138,11 +147,52 @@ const MainPage = () => {
           </CardContent>
         </Card>
       </div>
-      <hr />
-      <h2>here contribution graph</h2>
-      <ContributionGraph />
-      <h2>Here current year contribution</h2>
-      <ContributionGraphCurrent />
+      <Separator className="my-2" />
+      <h1 className="text-xl">
+        Contribution HeatMaps{" "}
+        <LuChartBarIncreasing className="inline ml-2 w-5 h-5" />
+      </h1>
+      <div className="flex-1 w-full px-10 my-4">
+        <Card>
+          <CardHeader className="flex items-center justify-between space-y-0 pb-2">
+            <div className="space-y-1">
+              <CardTitle className="text-base">
+                Contributions{" "}
+                {range === "past" ? "Past 12 Months" : "Current Year"}
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">
+                View your GitHub commits.
+              </p>
+            </div>
+
+            {/* Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="text-xs">
+                  {range === "past" ? "Past Year" : "Current Year"} 
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setRange("past")}>
+                  Past Year
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setRange("current")}>
+                  Current Year
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </CardHeader>
+
+          <CardContent>
+            {range === "past" ? (
+              <ContributionGraph />
+            ) : (
+              <ContributionGraphCurrent />
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

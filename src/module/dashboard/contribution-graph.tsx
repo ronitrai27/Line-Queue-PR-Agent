@@ -20,13 +20,6 @@ const ContributionGraph = () => {
     queryFn: getContributionStats as any,
   });
 
-//   const { data: data2, isLoading: isLoading2 } = useQuery<{
-//     contributions2: any[];
-//     totalContributions2: number;
-//   }>({
-//     queryKey: ["current-contribution-graph"],
-//     queryFn: getCurrentContributionStats as any,
-//   });
 
   if (isLoading) {
     return <div>Loading... contribution data</div>;
@@ -40,7 +33,7 @@ const ContributionGraph = () => {
     );
   }
   return (
-    <div className="w-full flex flex-col items-center gap-4 p-4">
+    <div className="w-full flex flex-col items-center gap-3">
       <div className="text-sm text-muted-foreground">
         <span>{data?.totalContributions} in the last year</span>
       </div>
@@ -50,10 +43,12 @@ const ContributionGraph = () => {
           <ActivityCalendar
             data={data?.contributions}
             colorScheme={theme === "dark" ? "dark" : "light"}
-            blockSize={11}
-            blockMargin={4}
-            fontSize={12}
+            blockSize={12}
+            blockMargin={5}
+            fontSize={14}
             showWeekdayLabels
+            showColorLegend
+            showTotalCount
             showMonthLabels
           />
         </div>
