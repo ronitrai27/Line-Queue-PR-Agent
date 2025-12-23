@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "inngest:dev": "powershell -Command \"Start-Process '.\\bin\\inngest.exe' -ArgumentList 'dev' -NoNewWindow -Wait\"",
     "lint": "eslint"
   },
   "dependencies": {
@@ -46,6 +47,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "embla-carousel-react": "^8.6.0",
+    "inngest": "^3.48.1",
     "input-otp": "^1.4.2",
     "install": "^0.13.0",
     "jotai": "^1",
