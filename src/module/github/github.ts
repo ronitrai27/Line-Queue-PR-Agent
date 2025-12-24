@@ -412,8 +412,8 @@ export async function getRepoFolderStructure(
   }
 
   await buildFolderTree("", root);
-  console.log("✅ FINAL ROOT TREE:");
-  console.dir(root, { depth: null });
+  console.log("✅ FINAL ROOT TREE DONE");
+  // console.dir(root, { depth: null });
 
   return root;
 }

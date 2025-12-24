@@ -13,7 +13,7 @@ interface ReactFlowData {
   edges: Edge[];
 }
 
-// Main function: Convert tree to React Flow format
+// Main function: Convert tree to React Flow format with proper hierarchy
 export function folderTreeToReactFlow(
   tree: FolderNode,
   owner: string,
@@ -24,24 +24,45 @@ export function folderTreeToReactFlow(
 
   let nodeIdCounter = 0;
 
-  // Simple positioning
-  const HORIZONTAL_SPACING = 300;
-  const VERTICAL_SPACING = 100;
+  // Better spacing for clear hierarchy
+  const HORIZONTAL_SPACING = 350; // More space between siblings
+  const VERTICAL_SPACING = 150;   // More space between levels
+  const CHILD_OFFSET = 50;         // Offset children from parent
+
+  // Track position counters per level
+  const levelCounters: { [key: number]: number } = {};
 
   function traverse(
     folder: FolderNode,
     parentId: string | null,
-    level: number,
-    indexAtLevel: number
+    parentX: number,
+    level: number
   ) {
     const nodeId = `node-${nodeIdCounter++}`;
 
-    console.log(`📦 Creating node: ${folder.name} (Level ${level}, Index ${indexAtLevel})`);
+    // Initialize level counter if not exists
+    if (!(level in levelCounters)) {
+      levelCounters[level] = 0;
+    }
 
-    // Simple positioning
-    const x = indexAtLevel * HORIZONTAL_SPACING;
-    const y = level * VERTICAL_SPACING;
+    // Calculate position
+    let x: number;
+    let y = level * VERTICAL_SPACING;
 
+    if (level === 0) {
+      // Root node - center it
+      x = 0;
+    } else if (folder.children.length === 0) {
+      // Leaf node - use level counter for horizontal positioning
+      x = levelCounters[level] * HORIZONTAL_SPACING - (HORIZONTAL_SPACING / 2);
+      levelCounters[level]++;
+    } else {
+      // Parent node - calculate based on children positions
+      x = parentX + (levelCounters[level] * HORIZONTAL_SPACING);
+      levelCounters[level]++;
+    }
+
+    console.log(`📦 ${folder.name} at (${x}, ${y}) - Level ${level}`);
 
     const node: Node = {
       id: nodeId,
@@ -52,6 +73,7 @@ export function folderTreeToReactFlow(
         fileCount: folder.fileCount,
         githubUrl: folder.githubUrl,
         path: folder.path || "root",
+        level: level, // Pass level for styling
       },
     };
 
@@ -59,20 +81,26 @@ export function folderTreeToReactFlow(
 
     // Create edge if has parent
     if (parentId) {
-      // console.log(`   🔗 Creating edge: ${parentId} -> ${nodeId}`);
       edges.push({
         id: `edge-${parentId}-${nodeId}`,
         source: parentId,
         target: nodeId,
         type: "smoothstep",
+        animated: false,
+        style: {
+          stroke: "#64748b",
+          strokeWidth: 2,
+        },
       });
     }
 
-    // Process children
+    // Process children with offset
     if (folder.children && folder.children.length > 0) {
-      // console.log(`   👶 Has ${folder.children.length} children`);
+      const childStartX = x - ((folder.children.length - 1) * HORIZONTAL_SPACING) / 2;
+      
       folder.children.forEach((child, childIndex) => {
-        traverse(child, nodeId, level + 1, childIndex);
+        const childX = childStartX + (childIndex * HORIZONTAL_SPACING);
+        traverse(child, nodeId, childX, level + 1);
       });
     }
   }
@@ -80,9 +108,7 @@ export function folderTreeToReactFlow(
   console.log("🚀 Starting tree traversal...");
   traverse(tree, null, 0, 0);
 
-  console.log(`✅ Generated ${nodes.length} nodes and ${edges.length} edges`);
-  console.log("📊 Final nodes:", nodes);
-  console.log("📊 Final edges:", edges);
+  // console.log(`✅ Generated ${nodes.length} nodes and ${edges.length} edges`);
 
   return { nodes, edges };
 }
