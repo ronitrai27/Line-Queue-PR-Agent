@@ -13,54 +13,115 @@ interface ReactFlowData {
   edges: Edge[];
 }
 
-// Main function: Convert tree to React Flow format with proper hierarchy
+function shouldIncludeFolder(folderName: string, path: string): boolean {
+  const excludedFolders = [
+    "migrations",
+    "node_modules",
+    ".git",
+    ".next",
+    "dist",
+    "build",
+    "coverage",
+  ];
+
+  const lowerName = folderName.toLowerCase();
+  const lowerPath = path.toLowerCase();
+
+  return !excludedFolders.some(
+    (excluded) => lowerName === excluded || lowerPath.includes(`/${excluded}/`)
+  );
+}
+
+function filterTree(folder: FolderNode): FolderNode | null {
+  if (!shouldIncludeFolder(folder.name, folder.path)) {
+    return null;
+  }
+
+  const filteredChildren = folder.children
+    .map((child) => filterTree(child))
+    .filter((child): child is FolderNode => child !== null);
+
+  return {
+    ...folder,
+    children: filteredChildren,
+  };
+}
+
+function calculateTreeWidth(folder: FolderNode, spacing: number): number {
+  if (folder.children.length === 0) {
+    return spacing;
+  }
+
+  let totalWidth = 0;
+  folder.children.forEach((child) => {
+    totalWidth += calculateTreeWidth(child, spacing);
+  });
+
+  return Math.max(spacing, totalWidth);
+}
+
+function calculateTreeDepth(folder: FolderNode): number {
+  if (folder.children.length === 0) {
+    return 1;
+  }
+
+  let maxChildDepth = 0;
+  folder.children.forEach((child) => {
+    maxChildDepth = Math.max(maxChildDepth, calculateTreeDepth(child));
+  });
+
+  return 1 + maxChildDepth;
+}
+
 export function folderTreeToReactFlow(
   tree: FolderNode,
   owner: string,
   repo: string
 ): ReactFlowData {
+  const filteredTree = filterTree(tree);
+
+  if (!filteredTree) {
+    return { nodes: [], edges: [] };
+  }
+
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
   let nodeIdCounter = 0;
 
-  // Better spacing for clear hierarchy
-  const HORIZONTAL_SPACING = 350; // More space between siblings
-  const VERTICAL_SPACING = 150;   // More space between levels
-  const CHILD_OFFSET = 50;         // Offset children from parent
+  const HORIZONTAL_SPACING = 280;
+  const VERTICAL_SPACING = 200;
 
-  // Track position counters per level
-  const levelCounters: { [key: number]: number } = {};
+  // Track the maximum Y position used at each X coordinate to prevent overlap
+  const xPositionTracker: { [key: number]: number } = {};
+
+  function getAvailableY(x: number, baseY: number): number {
+    const roundedX = Math.round(x / 10) * 10;
+
+    if (!(roundedX in xPositionTracker)) {
+      xPositionTracker[roundedX] = baseY;
+      return baseY;
+    }
+
+    const availableY = Math.max(
+      baseY,
+      xPositionTracker[roundedX] + VERTICAL_SPACING
+    );
+    xPositionTracker[roundedX] = availableY;
+    return availableY;
+  }
 
   function traverse(
     folder: FolderNode,
     parentId: string | null,
-    parentX: number,
+    x: number,
+    baseY: number,
     level: number
-  ) {
+  ): { width: number; height: number } {
     const nodeId = `node-${nodeIdCounter++}`;
 
-    // Initialize level counter if not exists
-    if (!(level in levelCounters)) {
-      levelCounters[level] = 0;
-    }
-
-    // Calculate position
-    let x: number;
-    let y = level * VERTICAL_SPACING;
-
-    if (level === 0) {
-      // Root node - center it
-      x = 0;
-    } else if (folder.children.length === 0) {
-      // Leaf node - use level counter for horizontal positioning
-      x = levelCounters[level] * HORIZONTAL_SPACING - (HORIZONTAL_SPACING / 2);
-      levelCounters[level]++;
-    } else {
-      // Parent node - calculate based on children positions
-      x = parentX + (levelCounters[level] * HORIZONTAL_SPACING);
-      levelCounters[level]++;
-    }
+    // Get an available Y position that won't overlap
+    const y = getAvailableY(x, baseY);
 
     console.log(`📦 ${folder.name} at (${x}, ${y}) - Level ${level}`);
 
@@ -72,14 +133,13 @@ export function folderTreeToReactFlow(
         label: folder.name,
         fileCount: folder.fileCount,
         githubUrl: folder.githubUrl,
-        path: folder.path || "root",
-        level: level, // Pass level for styling
+        path: folder.path || "/",
+        level: level,
       },
     };
 
     nodes.push(node);
 
-    // Create edge if has parent
     if (parentId) {
       edges.push({
         id: `edge-${parentId}-${nodeId}`,
@@ -94,26 +154,47 @@ export function folderTreeToReactFlow(
       });
     }
 
-    // Process children with offset
     if (folder.children && folder.children.length > 0) {
-      const childStartX = x - ((folder.children.length - 1) * HORIZONTAL_SPACING) / 2;
-      
-      folder.children.forEach((child, childIndex) => {
-        const childX = childStartX + (childIndex * HORIZONTAL_SPACING);
-        traverse(child, nodeId, childX, level + 1);
+      const childBaseY = y + VERTICAL_SPACING;
+
+      const totalChildrenWidth = folder.children.length * HORIZONTAL_SPACING;
+      let childX = x - totalChildrenWidth / 2 + HORIZONTAL_SPACING / 2;
+
+      let maxChildHeight = 0;
+
+      folder.children.forEach((child) => {
+        const { height } = traverse(
+          child,
+          nodeId,
+          childX,
+          childBaseY,
+          level + 1
+        );
+        maxChildHeight = Math.max(maxChildHeight, height);
+        childX += HORIZONTAL_SPACING;
       });
+
+      return {
+        width: totalChildrenWidth,
+        height: VERTICAL_SPACING + maxChildHeight,
+      };
     }
+
+    return {
+      width: HORIZONTAL_SPACING,
+      height: VERTICAL_SPACING,
+    };
   }
 
   console.log("🚀 Starting tree traversal...");
-  traverse(tree, null, 0, 0);
+
+  const startX = 0;
+  traverse(filteredTree, null, startX, 0, 0);
 
   // console.log(`✅ Generated ${nodes.length} nodes and ${edges.length} edges`);
 
   return { nodes, edges };
 }
-
-
 
 // import {
 //   LuBringToFront,

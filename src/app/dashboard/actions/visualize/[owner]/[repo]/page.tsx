@@ -10,7 +10,7 @@ export default function VisualizePage() {
   const repo = decodeURIComponent(params.repo as string);
 
   return (
-    <div className="flex-1 w-full h-full p-2 relative bg-white">
+    <div className="flex-1 w-full h-full p-2 relative bg-white rounded-md">
       <RepoVisualizer owner={owner} repo={repo} />
     </div>
   );

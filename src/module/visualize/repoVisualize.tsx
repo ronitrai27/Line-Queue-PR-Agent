@@ -20,29 +20,27 @@ import { ExternalLink, Folder, FileText } from "lucide-react";
 import { generateRepoVisualization } from ".";
 import { LuLightbulb, LuX } from "react-icons/lu";
 
-// 🎨 Enhanced Folder Node Component
 function FolderNode({ data }: any) {
   const isRoot = data.level === 0;
 
-  // Dynamic colors based on folder name
   const getFolderColor = (name: string): string => {
     const colorMap: { [key: string]: string } = {
-      src: "#3b82f6",
-      app: "#8b5cf6",
+      src: "#D33434",
+      app: "#354FD4",
       api: "#10b981",
-      components: "#f59e0b",
-      lib: "#ef4444",
-      utils: "#06b6d4",
-      public: "#84cc16",
-      styles: "#ec4899",
-      config: "#64748b",
-      types: "#0ea5e9",
-      hooks: "#f97316",
-      services: "#14b8a6",
-      routes: "#a855f7",
-      middleware: "#eab308",
+      components: "#5E80DC",
+      lib: "#5E80DC",
+      utils: "#5E80DC",
+      public: "#49AE35",
+      styles: "#5E80DC",
+      config: "#5E80DC",
+      types: "#5E80DC",
+      hooks: "#5E80DC",
+      services: "#5E80DC",
+      routes: "#5E80DC",
+      middleware: "#5E80DC",
     };
-    return colorMap[name.toLowerCase()] || "#6b7280";
+    return colorMap[name.toLowerCase()] || "#5E80DC";
   };
 
   const color = getFolderColor(data.label);
@@ -73,7 +71,6 @@ function FolderNode({ data }: any) {
         }}
         onClick={() => window.open(data.githubUrl, "_blank")}
       >
-        {/* Header with icon */}
         <div
           className="px-4 py-2 flex items-center gap-2"
           style={{
@@ -81,25 +78,20 @@ function FolderNode({ data }: any) {
             borderBottom: `2px solid ${color}20`,
           }}
         >
-          <Folder
-            className="flex-shrink-0"
-            size={20}
-            style={{ color: color }}
-          />
+          <Folder className="shrink-0" size={20} style={{ color: color }} />
           <div className="flex-1 min-w-0">
             <div
-              className="font-bold text-sm truncate"
+              className="font-bold text-sm truncate capitalize"
               style={{
                 color: color,
-                fontFamily: isRoot ? "monospace" : "system-ui",
-                fontSize: isRoot ? "16px" : "14px",
+                fontSize: isRoot ? "18px" : "15px",
               }}
             >
               {data.label}
             </div>
           </div>
           <ExternalLink
-            className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+            className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
             size={14}
             style={{ color: color }}
           />
@@ -109,15 +101,15 @@ function FolderNode({ data }: any) {
         <div className="px-4 py-3 space-y-2">
           {/* File count */}
           <div className="flex items-center gap-2">
-            <FileText size={14} className="text-gray-400" />
-            <span className="text-xs font-medium text-gray-700">
+            <FileText size={18} className="text-gray-400" />
+            <span className="text-sm font-medium text-gray-700">
               {data.fileCount} file{data.fileCount !== 1 ? "s" : ""}
             </span>
           </div>
 
           {/* Path */}
           <div
-            className="text-xs text-gray-500 truncate font-mono"
+            className="text-sm text-accent truncate font-mono tracking-tight"
             style={{
               background: "#f1f5f9",
               padding: "4px 8px",
@@ -165,7 +157,7 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-   const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -264,49 +256,49 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
       </div>
 
       {/* Legend */}
- <div className="absolute top-4 right-4 z-50">
-      {/* CLOSED STATE (CIRCLE) */}
-      {!open && (
-        <button
-          onClick={() => setOpen(true)}
-          className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
-        >
-          <LuLightbulb size={18} />
-        </button>
-      )}
+      <div className="absolute top-4 right-4 z-50">
+        {/* CLOSED STATE (CIRCLE) */}
+        {!open && (
+          <button
+            onClick={() => setOpen(true)}
+            className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
+          >
+            <LuLightbulb size={18} />
+          </button>
+        )}
 
-      {/* OPEN STATE (LEGEND) */}
-      {open && (
-        <div
-          className="
+        {/* OPEN STATE (LEGEND) */}
+        {open && (
+          <div
+            className="
             w-64 bg-gray-100 rounded-lg shadow-xl p-4
             animate-in fade-in slide-in-from-top-2 duration-200
           "
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-medium text-sm text-gray-800 flex items-center gap-1">
-              <LuLightbulb />
-              Quick Guide
-            </h3>
-            <button
-              onClick={() => setOpen(false)}
-              className="text-gray-500 hover:text-gray-800"
-            >
-              <LuX size={16} />
-            </button>
-          </div>
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-medium text-sm text-gray-800 flex items-center gap-1">
+                <LuLightbulb />
+                Quick Guide
+              </h3>
+              <button
+                onClick={() => setOpen(false)}
+                className="text-gray-500 hover:text-gray-800"
+              >
+                <LuX size={16} />
+              </button>
+            </div>
 
-          {/* Content */}
-          <ul className="space-y-2 text-xs text-gray-600">
-            <li>📁 Click any folder to view on GitHub</li>
-            <li>🖱️ Scroll to zoom in / out</li>
-            <li>✋ Drag to pan around</li>
-            <li>💬 Click on Chat to open a conversation</li>
-          </ul>
-        </div>
-      )}
-    </div>
+            {/* Content */}
+            <ul className="space-y-2 text-xs text-gray-600">
+              <li>📁 Click any folder to view on GitHub</li>
+              <li>🖱️ Scroll to zoom in / out</li>
+              <li>✋ Drag to pan around</li>
+              <li>💬 Click on Chat to open a conversation</li>
+            </ul>
+          </div>
+        )}
+      </div>
 
       {/* React Flow */}
       <ReactFlow
@@ -330,14 +322,17 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
           nodeColor={(node) => {
             const name = (node?.data?.label as string)?.toLowerCase();
             const colors: { [key: string]: string } = {
-              src: "#3b82f6",
-              app: "#8b5cf6",
-              api: "#10b981",
-              components: "#f59e0b",
-              lib: "#ef4444",
-              utils: "#06b6d4",
+              src: "#D33434",
+              app: "#354FD4",
+              api: "#49AE35",
+              components: "#5E80DC",
+              lib: "#5E80DC",
+              utils: "#5E80DC",
+              ui: "#5E80DC",
+              functions: "#5E80DC",
+              public: "#49AE35",
             };
-            return colors[name] || "#6b7280";
+            return colors[name] || "#5E80DC";
           }}
         />
         <Background
