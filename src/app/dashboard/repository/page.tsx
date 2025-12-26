@@ -16,6 +16,7 @@ import { LuStar } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { RepositoryCardSkeleton } from "@/components/custom/RepoSkeleton";
 import { UseConnectRepo } from "@/module/repository/use-connect-repo";
+import { toast } from "sonner";
 
 interface Repository {
   id: number;
@@ -57,7 +58,9 @@ const RepoPage = () => {
 
   const handleConnect = async (repo: Repository) => {
     setLocalConnectingId(repo.id);
-
+    toast.loading("Connecting repository...", {
+      id: "connect-repo",
+    });
     connectRepo(
       {
         owner: repo.full_name.split("/")[0],
@@ -67,6 +70,7 @@ const RepoPage = () => {
       {
         onSettled: () => {
           setLocalConnectingId(null);
+          toast.dismiss("connect-repo");
         },
       }
     );

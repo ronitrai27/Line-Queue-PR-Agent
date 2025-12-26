@@ -8,6 +8,7 @@ import {
   getCurrentContributionStats,
 } from "@/module/dashboard/index";
 import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ContributionGraph = () => {
   const { theme } = useTheme();
@@ -22,7 +23,7 @@ const ContributionGraph = () => {
 
 
   if (isLoading) {
-    return <div>Loading... contribution data</div>;
+    return <div> <Skeleton className="h-40 w-full" /> </div>;
   }
 
   if (!data || !data?.contributions.length) {

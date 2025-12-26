@@ -157,7 +157,6 @@ export const getRepositories = async (
 // ============================
 // CREATING WEBHOOK
 // ============================
-
 export const createWebhook = async (owner: string, repo: string) => {
   const token = await getGithubToken();
 
@@ -264,3 +263,236 @@ export const deleteWebhook = async (owner: string, repo: string) => {
     return false;
   }
 };
+
+// =================================
+// GETTING REPO ALL FILES (TEXT PART)
+// =================================
+
+export async function getRepoFileContents(
+  token: string,
+  owner: string,
+  repo: string,
+  path: string = ""
+): Promise<{ path: string; content: string }[]> {
+  const octokit = new Octokit({ auth: token });
+  const { data } = await octokit.rest.repos.getContent({
+    owner,
+    repo,
+    path,
+  });
+
+  // JUST A CHECK
+  if (!Array.isArray(data)) {
+    if (data.type === "file" && data.content) {
+      return [
+        {
+          path: data.path,
+          content: Buffer.from(data.content, "base64").toString("utf-8"),
+        },
+      ];
+    }
+    return [];
+  }
+
+  let files: { path: string; content: string }[] = [];
+
+  for (const item of data) {
+    if (item.type === "file") {
+      const { data: fileData } = await octokit.rest.repos.getContent({
+        owner,
+        repo,
+        path: item.path,
+      });
+
+      // CHECKING
+      if (
+        !Array.isArray(fileData) &&
+        fileData.type === "file" &&
+        fileData.content
+      ) {
+        // FILTER OUT NON-CODE FILES IF NEEDD (IMAGES ETC)
+        if (!item.path.match(/\.(png|jpg|jpeg|gif|ico|tar|gz|pdf|zip|svg)$/i)) {
+          files.push({
+            path: item.path,
+            content: Buffer.from(fileData.content, "base64").toString("utf-8"),
+          });
+        }
+      }
+    } else if (item.type === "dir") {
+      const subFiles = await getRepoFileContents(token, owner, repo, item.path);
+
+      files = files.concat(subFiles);
+    }
+  }
+
+  return files;
+}
+
+// ================================
+// TESTING FOLDER STRUCTURE && Latest COMMIT SHA
+// ================================
+interface FolderNode {
+  path: string;
+  name: string;
+  fileCount: number;
+  githubUrl: string;
+  children: FolderNode[];
+}
+
+export async function getRepoFolderStructure(
+  token: string,
+  owner: string,
+  repo: string,
+  branch: string = "main"
+): Promise<{ folderTree: FolderNode; latestCommitSHA: string }> {
+  const octokit = new Octokit({ auth: token });
+  console.log("Owner:", owner);
+  console.log("Repo:", repo);
+  console.log("Branch:", branch);
+
+  const { data: branchData } = await octokit.rest.repos.getBranch({
+    owner,
+    repo,
+    branch,
+  });
+  const latestCommitSHA = branchData.commit.sha;
+
+  console.log("📌 Latest Commit SHA:", latestCommitSHA);
+
+  const root: FolderNode = {
+    path: "",
+    name: repo,
+    fileCount: 0,
+    githubUrl: `https://github.com/${owner}/${repo}`,
+    children: [],
+  };
+
+  // Recursive function to build folder tree
+  async function buildFolderTree(
+    currentPath: string,
+    parentNode: FolderNode
+  ): Promise<void> {
+    console.log(
+      `📂 Fetching path: "${currentPath === "" ? "/" : currentPath}"`
+    );
+    try {
+      const { data } = await octokit.rest.repos.getContent({
+        owner,
+        repo,
+        path: currentPath,
+      });
+
+      if (!Array.isArray(data)) {
+        console.log("⚠️ Not a directory:", currentPath);
+        return;
+      }
+
+      if (Array.isArray(data)) {
+        // Count files in this directory
+        const filesInThisDir = data.filter((item) => item.type === "file");
+        parentNode.fileCount = filesInThisDir.length;
+
+        // Get all subdirectories
+        const folders = data.filter((item) => item.type === "dir");
+
+        // Process each folder
+        for (const folder of folders) {
+          const folderNode: FolderNode = {
+            path: folder.path,
+            name: folder.name,
+            fileCount: 0,
+            githubUrl: `https://github.com/${owner}/${repo}/tree/${branch}/${folder.path}`,
+            children: [],
+          };
+
+          parentNode.children.push(folderNode);
+
+          // Recursively get subfolders
+          await buildFolderTree(folder.path, folderNode);
+        }
+      }
+    } catch (error) {
+      console.error(`Error fetching ${currentPath}:`, error);
+    }
+  }
+
+  await buildFolderTree("", root);
+  console.log("✅ FINAL ROOT TREE DONE");
+
+  return {
+    folderTree: root,
+    latestCommitSHA,
+  };
+}
+// ===============================
+// Get Latest Repo Commit SHA
+// ==============================
+export async function getLatestCommitSHA(
+  token: string,
+  owner: string,
+  repo: string,
+  branch: string = "main"
+): Promise<string> {
+  const octokit = new Octokit({ auth: token });
+
+  //  Get branch info (includes latest commit SHA)
+  const { data } = await octokit.rest.repos.getBranch({
+    owner,
+    repo,
+    branch,
+  });
+
+  return data.commit.sha;
+}
+// ===============================
+// PULL REQ DIFFERENCE (WHAT IS CHNAGED/ADDED)
+// ================================
+
+export async function getPullReqDiff(
+  token: string,
+  owner: string,
+  repo: string,
+  prNumber: number
+) {
+  const octokit = new Octokit({ auth: token });
+  const { data: pr } = await octokit.rest.pulls.get({
+    owner,
+    repo,
+    pull_number: prNumber,
+  });
+
+  const { data: diff } = await octokit.rest.pulls.get({
+    owner,
+    repo,
+    pull_number: prNumber,
+    mediaType: {
+      format: "diff",
+    },
+  });
+
+  return {
+    diff: diff as unknown as string,
+    title: pr.title,
+    description: pr.body || "",
+  };
+}
+
+// ===============================
+// POST COMMENT
+// ===============================
+
+export async function postReviewComment(
+  token: string,
+  owner: string,
+  repo: string,
+  prNumber: number,
+  review: string
+) {
+  const octokit = new Octokit({ auth: token });
+  await octokit.rest.issues.createComment({
+    owner,
+    repo,
+    issue_number: prNumber,
+    body: `## AI CODE REVIEW \n\n${review} \n\n -------\n *Powered By Line-Queue*`,
+  });
+}

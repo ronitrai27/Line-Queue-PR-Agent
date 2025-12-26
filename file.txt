@@ -1,0 +1,83 @@
+Explanation---------->
+your-repo/
+├── src/
+│   ├── app/
+│   │   └── api/
+│   │       ├── users/route.ts
+│   │       └── posts/route.ts
+│   └── components/
+│       ├── Button.tsx
+│       └── Navbar.tsx
+├── lib/
+│   └── functions/
+│       ├── auth.ts
+│       └── db.ts
+├── utils/
+│   ├── helpers.ts
+│   └── validators.ts
+├── package.json
+├── README.md
+└── node_modules/  (has 1000s of files)
+
+(1.) --------> we had a very first function to get token and send username (owner) , token, and repo, path = ""(root)
+
+2.-----> Now octokit fetches those Things content of the repo// Octokit fetches: GET /repos/yourusername/your-repo/contents/
+
+// GitHub returns:
+[
+  { type: "dir", path: "src" },
+  { type: "dir", path: "lib" },
+  { type: "dir", path: "utils" },
+  { type: "dir", path: "node_modules" },
+  { type: "file", path: "package.json" },
+  { type: "file", path: "README.md" }
+]
+for DIR (folders), recursion has been setup to go to the  every file.
+and for each file , github returns the content.
+
+After recurssion we get 
+[
+  {
+    path: "package.json",
+    content: "{ \"name\": \"my-app\", \"version\": \"1.0.0\", ... }"
+  },
+  {
+    path: "README.md",
+    content: "# My Awesome Project\n\nThis is a Next.js app..."
+  },
+  {
+    path: "src/app/api/users/route.ts",
+    content: "import { NextResponse } from 'next/server';\n\nexport async function GET(request: Request) { const users = await db.query('SELECT * FROM users'); return NextResponse.json(users); }"
+  },
+  {
+    path: "src/app/api/posts/route.ts",
+    content: "export async function POST(request: Request) { ... }"
+  },
+  {
+    path: "src/components/Button.tsx",
+    content: "export default function Button({ children, onClick }) { return <button onClick={onClick}>{children}</button>; }"
+  },
+  {
+    path: "src/components/Navbar.tsx",
+    content: "export default function Navbar() { return <nav>...</nav>; }"
+  },
+  {
+    path: "lib/functions/auth.ts",
+    content: "export function verifyToken(token: string) { ... }"
+  },
+  {
+    path: "lib/functions/db.ts",
+    content: "import { PrismaClient } from '@prisma/client';\nconst prisma = new PrismaClient();"
+  },
+  {
+    path: "utils/helpers.ts",
+    content: "export function formatDate(date: Date) { ... }"
+  },
+  {
+    path: "utils/validators.ts",
+    content: "export function validateEmail(email: string) { ... }"
+  }
+]
+
+
+and now at last we are storing to vector db.

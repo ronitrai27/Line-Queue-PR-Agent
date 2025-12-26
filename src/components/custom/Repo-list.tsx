@@ -35,18 +35,22 @@ export function RepositoryListPage() {
   const { data: repo, isLoading } = useQuery({
     queryKey: ["connected-repo"],
     queryFn: async () => await getConnectedRepositories(),
-    staleTime: 1000 * 60 * 5,
+    // staleTime: 1000 * 60 * 5,
     refetchOnMount: true,
-    refetchOnWindowFocus(query) {
-      return true;
-    },
   });
 
   const disconnectMutation = useMutation({
     mutationFn: async (repoId: string) => {
       return await disconnectRepo(repoId);
     },
+    onMutate: () => {
+      toast.loading("Disconnecting repository...", {
+        id: "disconnect-repo",
+      });
+    },
     onSuccess: (result) => {
+      toast.dismiss("disconnect-repo");
+
       if (result) {
         queryClient.invalidateQueries({ queryKey: ["connected-repo"] });
         queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
@@ -61,7 +65,13 @@ export function RepositoryListPage() {
     mutationFn: async () => {
       return await disconnectAllRepo();
     },
+    onMutate: () => {
+      toast.loading("Disconnecting all repositories...", {
+        id: "disconnect-all-repo",
+      });
+    },
     onSuccess: (result) => {
+      toast.dismiss("disconnect-all-repo");
       if (result) {
         queryClient.invalidateQueries({ queryKey: ["connected-repo"] });
         queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });

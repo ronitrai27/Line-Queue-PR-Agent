@@ -12,7 +12,7 @@ import { DashboardBreadcrumbs } from "@/components/custom/sidebar-breadcrumbs";
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   await requireAuth();
   return (
-    <SidebarProvider defaultOpen>
+    <SidebarProvider defaultOpen={true}>
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
