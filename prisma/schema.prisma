@@ -13,37 +13,55 @@ model Test {
 }
 
 model User {
-  id            String    @id
+  id            String       @id
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean      @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  credits       Int       @default(10)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  credits       Int          @default(10)
   sessions      Session[]
   accounts      Account[]
-  repositories Repository[]  // our model repository
+  repositories  Repository[] // our model repository
 
   @@unique([email])
   @@map("user")
 }
 
-model Repository{
-  id String @id @default(cuid())
-  githubId BigInt @unique
-  name String
-  owner String
-  fullName String
-  url String
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Repository {
+  id        String   @id @default(cuid())
+  githubId  BigInt   @unique
+  name      String
+  owner     String
+  fullName  String
+  url       String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviews Review[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@map("repository")
+}
 
+model Review {
+  id           String  @id @default(cuid())
+  repositoryId String
+  repository    Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  prNumber Int
+  prTitle  String
+  prUrl    String
+  review   String @db.Text
+  status   String @default("completed") // completed, failed, pending
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([repositoryId])
+  @@map("review")
 }
 
 model Session {

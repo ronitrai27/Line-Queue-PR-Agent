@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sheet";
 import { getRepoIssues } from "@/module/github/github";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type SelectedRepo = {
   id: string; // githubId
@@ -44,12 +45,12 @@ const ActionPage = () => {
   const [selectedRepo, setSelectedRepo] = useState<SelectedRepo | null>(null);
   const router = useRouter();
 
-  const { data: issues, isLoading: isLoadingIssues } = useQuery({
-    queryKey: ["repo-issues", selectedRepo?.id],
-    queryFn: async () =>
-      selectedRepo ? getRepoIssues(selectedRepo.id, "all") : [],
-    enabled: !!selectedRepo?.id,
-  });
+  // const { data: issues, isLoading: isLoadingIssues } = useQuery({
+  //   queryKey: ["repo-issues", selectedRepo?.id],
+  //   queryFn: async () =>
+  //     selectedRepo ? getRepoIssues(selectedRepo.id, "all") : [],
+  //   enabled: !!selectedRepo?.id,
+  // });
 
   if (isLoading)
     return (
@@ -118,7 +119,7 @@ const ActionPage = () => {
                             owner: repo.owner,
                             name: repo.name,
                           });
-
+                          toast.success("Action Running Successfully");
                           router.push(
                             `/dashboard/actions/visualize/${encodeURIComponent(
                               repo.owner

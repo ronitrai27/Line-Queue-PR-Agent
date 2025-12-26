@@ -22,7 +22,11 @@ import ContributionGraph from "@/module/dashboard/contribution-graph";
 import ContributionGraphCurrent from "@/module/dashboard/contribution-current";
 import { Brain, GitBranch, GitBranchPlus, GitPullRequest } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { LuActivity, LuChartBarIncreasing, LuChevronDown } from "react-icons/lu";
+import {
+  LuActivity,
+  LuChartBarIncreasing,
+  LuChevronDown,
+} from "react-icons/lu";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,6 +54,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const MainPage = () => {
   const { user, session, loading, error } = useAuthUser();
@@ -106,7 +111,11 @@ const MainPage = () => {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-semibold tracking-tight pb-1">
-              {isLoading ? "..." : stats?.totalRepos || 0}
+              {isLoading ? (
+                <Skeleton className="h-11 w-9" />
+              ) : (
+                stats?.totalRepos || 0
+              )}
             </p>
             <p className="text-xs text-muted-foreground">Connected Repos</p>
           </CardContent>
@@ -122,7 +131,11 @@ const MainPage = () => {
             {/* Rolling 12 months */}
             <div>
               <p className="text-2xl font-semibold tracking-tight pb-1">
-                {isLoading ? "..." : stats?.totalCommits ?? 0}
+                {isLoading ? (
+                  <Skeleton className="h-11 w-9" />
+                ) : (
+                  stats?.totalCommits ?? 0
+                )}
               </p>
               <p className="text-xs text-muted-foreground tracking-tight">
                 Past 12 months
@@ -135,9 +148,11 @@ const MainPage = () => {
             {/* Calendar year */}
             <div>
               <p className="text-2xl font-semibold pb-1">
-                {isLoadingCurrent
-                  ? "..."
-                  : contributionCurrent?.totalContributions ?? 0}
+                {isLoadingCurrent ? (
+                  <Skeleton className="h-11 w-9" />
+                ) : (
+                  contributionCurrent?.totalContributions ?? 0
+                )}
               </p>
               <p className="text-xs tracking-tight text-muted-foreground">
                 Jan {new Date().getFullYear()} – Today
@@ -154,7 +169,11 @@ const MainPage = () => {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-semibold tracking-tight pb-1">
-              {isLoading ? "..." : stats?.totalpr || 0}
+              {isLoading ? (
+                <Skeleton className="h-11 w-9" />
+              ) : (
+                stats?.totalpr || 0
+              )}
             </p>
             <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>
@@ -167,7 +186,11 @@ const MainPage = () => {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-semibold tracking-tight pb-1">
-              {isLoading ? "..." : stats?.totalReviews || 0}
+              {isLoading ? (
+                <Skeleton className="h-11 w-9" />
+              ) : (
+                stats?.totalReviews || 0
+              )}
             </p>
             <p className="text-xs text-muted-foreground">Generate Reviews</p>
           </CardContent>
@@ -225,8 +248,7 @@ const MainPage = () => {
       {/* CHARTS OVERVIEW */}
 
       <h1 className="text-xl my-5">
-        Activity Stats{" "}
-        <LuActivity className="inline ml-2 w-5 h-5" />
+        Activity Stats <LuActivity className="inline ml-2 w-5 h-5" />
       </h1>
       <div className="w-full px-10 mt-4">
         <Card className="bg-white/10">

@@ -182,7 +182,7 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
     }
 
     load();
-  }, [owner, repo, setNodes, setEdges]);
+  }, [owner, repo]);
 
   if (loading) {
     return (

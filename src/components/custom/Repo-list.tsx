@@ -43,7 +43,14 @@ export function RepositoryListPage() {
     mutationFn: async (repoId: string) => {
       return await disconnectRepo(repoId);
     },
+    onMutate: () => {
+      toast.loading("Disconnecting repository...", {
+        id: "disconnect-repo",
+      });
+    },
     onSuccess: (result) => {
+      toast.dismiss("disconnect-repo");
+
       if (result) {
         queryClient.invalidateQueries({ queryKey: ["connected-repo"] });
         queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
@@ -58,7 +65,13 @@ export function RepositoryListPage() {
     mutationFn: async () => {
       return await disconnectAllRepo();
     },
+    onMutate: () => {
+      toast.loading("Disconnecting all repositories...", {
+        id: "disconnect-all-repo",
+      });
+    },
     onSuccess: (result) => {
+      toast.dismiss("disconnect-all-repo");
       if (result) {
         queryClient.invalidateQueries({ queryKey: ["connected-repo"] });
         queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });

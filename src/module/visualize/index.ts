@@ -54,12 +54,15 @@ export async function generateRepoVisualization(
 
     console.log("📦 Fetching repository folder structure from GitHub...");
 
-    const folderTree = await getRepoFolderStructure(
+    const { folderTree, latestCommitSHA } = await getRepoFolderStructure(
       account.accessToken,
       owner,
       repo,
       branch
     );
+
+    const commitSHA = latestCommitSHA;
+    console.log("🧾 Latest Commit SHA:", commitSHA);
 
     console.log("✅ Folder tree received from GitHub:");
 
@@ -72,8 +75,7 @@ export async function generateRepoVisualization(
 
     // console.log("React Flow visualization data generated:", visualizationData);
 
-    //============= SAVE TO DATABASE FOR PERSISTENCE AND IF NEW CHNAGES MADE TO REPO , ADD A BUTTON TO REFERSH AND UPDATE THIS============
-    // IN FUTURE
+    //============= SAVE TO DATABASE FOR PERSISTENCE==================
 
     return visualizationData;
   } catch (error) {

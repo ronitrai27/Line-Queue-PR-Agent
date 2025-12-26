@@ -157,7 +157,6 @@ export const getRepositories = async (
 // ============================
 // CREATING WEBHOOK
 // ============================
-
 export const createWebhook = async (owner: string, repo: string) => {
   const token = await getGithubToken();
 
@@ -330,7 +329,7 @@ export async function getRepoFileContents(
 }
 
 // ================================
-// TESTING FOLDER STRUCTURE
+// TESTING FOLDER STRUCTURE && Latest COMMIT SHA
 // ================================
 interface FolderNode {
   path: string;
@@ -345,15 +344,21 @@ export async function getRepoFolderStructure(
   owner: string,
   repo: string,
   branch: string = "main"
-): Promise<FolderNode> {
+): Promise<{ folderTree: FolderNode; latestCommitSHA: string }> {
   const octokit = new Octokit({ auth: token });
-
-  console.log("🔑 GitHub fetch started");
   console.log("Owner:", owner);
   console.log("Repo:", repo);
   console.log("Branch:", branch);
 
-  // Root folder
+  const { data: branchData } = await octokit.rest.repos.getBranch({
+    owner,
+    repo,
+    branch,
+  });
+  const latestCommitSHA = branchData.commit.sha;
+
+  console.log("📌 Latest Commit SHA:", latestCommitSHA);
+
   const root: FolderNode = {
     path: "",
     name: repo,
@@ -413,7 +418,81 @@ export async function getRepoFolderStructure(
 
   await buildFolderTree("", root);
   console.log("✅ FINAL ROOT TREE DONE");
-  // console.dir(root, { depth: null });
 
-  return root;
+  return {
+    folderTree: root,
+    latestCommitSHA,
+  };
+}
+// ===============================
+// Get Latest Repo Commit SHA
+// ==============================
+export async function getLatestCommitSHA(
+  token: string,
+  owner: string,
+  repo: string,
+  branch: string = "main"
+): Promise<string> {
+  const octokit = new Octokit({ auth: token });
+
+  //  Get branch info (includes latest commit SHA)
+  const { data } = await octokit.rest.repos.getBranch({
+    owner,
+    repo,
+    branch,
+  });
+
+  return data.commit.sha;
+}
+// ===============================
+// PULL REQ DIFFERENCE (WHAT IS CHNAGED/ADDED)
+// ================================
+
+export async function getPullReqDiff(
+  token: string,
+  owner: string,
+  repo: string,
+  prNumber: number
+) {
+  const octokit = new Octokit({ auth: token });
+  const { data: pr } = await octokit.rest.pulls.get({
+    owner,
+    repo,
+    pull_number: prNumber,
+  });
+
+  const { data: diff } = await octokit.rest.pulls.get({
+    owner,
+    repo,
+    pull_number: prNumber,
+    mediaType: {
+      format: "diff",
+    },
+  });
+
+  return {
+    diff: diff as unknown as string,
+    title: pr.title,
+    description: pr.body || "",
+  };
+}
+
+// ===============================
+// POST COMMENT
+// ===============================
+
+export async function postReviewComment(
+  token: string,
+  owner: string,
+  repo: string,
+  prNumber: number,
+  review: string
+) {
+  const octokit = new Octokit({ auth: token });
+  await octokit.rest.issues.createComment({
+    owner,
+    repo,
+    issue_number: prNumber,
+    body: `## AI CODE REVIEW \n\n${review} \n\n -------\n *Powered By Line-Queue*`,
+  });
 }
