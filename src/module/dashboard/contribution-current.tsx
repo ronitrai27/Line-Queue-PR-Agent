@@ -31,13 +31,13 @@ const ContributionGraphCurrent = () => {
   }
 
   return (
-    <div className="w-full flex flex-col items-center gap-3">
-      <div className="text-sm text-muted-foreground">
+    <div className="flex w-full flex-col items-center gap-3">
+      <div className="text-muted-foreground text-sm">
         <span>{data.totalContributions} contributions this year</span>
       </div>
 
       <div className="w-full overflow-x-auto">
-        <div className="flex justify-center min-w-max px-4">
+        <div className="flex min-w-max justify-center px-4">
           <ActivityCalendar
             data={data.contributionCurrent}
             colorScheme={theme === "dark" ? "dark" : "light"}

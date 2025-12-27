@@ -181,7 +181,7 @@ export const createWebhook = async (owner: string, repo: string) => {
       url: webhookUrl,
       content_type: "json",
     },
-    events: ["pull_request"],
+    events: ["pull_request", "push", "issues"],
   });
 
   return data;

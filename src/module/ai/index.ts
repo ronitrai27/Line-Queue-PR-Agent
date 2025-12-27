@@ -4,7 +4,6 @@ import prisma from "@/lib/db";
 import { getPullReqDiff } from "../github/github";
 import { inngest } from "@/inngest/client";
 
-
 export async function reveiewPullRequest(
   owner: string,
   repo: string,

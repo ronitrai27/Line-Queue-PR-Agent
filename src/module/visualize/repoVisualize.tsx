@@ -19,28 +19,29 @@ import { ExternalLink, Folder, FileText } from "lucide-react";
 
 import { generateRepoVisualization } from ".";
 import { LuLightbulb, LuX } from "react-icons/lu";
+import { useTheme } from "next-themes";
+import { Separator } from "@/components/ui/separator";
 
 function FolderNode({ data }: any) {
   const isRoot = data.level === 0;
-
   const getFolderColor = (name: string): string => {
     const colorMap: { [key: string]: string } = {
-      src: "#D33434",
-      app: "#354FD4",
-      api: "#10b981",
-      components: "#5E80DC",
-      lib: "#5E80DC",
-      utils: "#5E80DC",
-      public: "#49AE35",
-      styles: "#5E80DC",
-      config: "#5E80DC",
-      types: "#5E80DC",
-      hooks: "#5E80DC",
-      services: "#5E80DC",
-      routes: "#5E80DC",
-      middleware: "#5E80DC",
+      src: "#86A5E7",
+      app: "#86A5E7",
+      // api: "#86A5E7",
+      // components: "#86A5E7",
+      // lib: "#86A5E7",
+      // utils: "#86A5E7",
+      // public: "#86A5E7",
+      // styles: "#86A5E7",
+      // config: "#86A5E7",
+      // types: "#86A5E7",
+      // hooks: "#86A5E7",
+      // services: "#86A5E7",
+      // routes: "#86A5E7",
+      // middleware: "#86A5E7",
     };
-    return colorMap[name.toLowerCase()] || "#5E80DC";
+    return colorMap[name.toLowerCase()] || "#DEE3FF";
   };
 
   const color = getFolderColor(data.label);
@@ -64,26 +65,18 @@ function FolderNode({ data }: any) {
       />
 
       <div
-        className="rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden"
+        className="cursor-pointer overflow-hidden rounded-lg bg-linear-to-br from-gray-900 to-black p-1 shadow-lg transition-all"
         style={{
-          border: `3px solid ${color}`,
-          background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+          border: `1px dashed ${color}`,
         }}
         onClick={() => window.open(data.githubUrl, "_blank")}
       >
-        <div
-          className="px-4 py-2 flex items-center gap-2"
-          style={{
-            background: `linear-gradient(135deg, ${color}15 0%, ${color}05 100%)`,
-            borderBottom: `2px solid ${color}20`,
-          }}
-        >
-          <Folder className="shrink-0" size={20} style={{ color: color }} />
-          <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 px-4 py-2">
+          <Folder className="shrink-0" size={20} />
+          <div className="min-w-0 flex-1">
             <div
-              className="font-bold text-sm truncate capitalize"
+              className="truncate text-sm font-bold text-white capitalize"
               style={{
-                color: color,
                 fontSize: isRoot ? "18px" : "15px",
               }}
             >
@@ -91,25 +84,25 @@ function FolderNode({ data }: any) {
             </div>
           </div>
           <ExternalLink
-            className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+            className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
             size={14}
             style={{ color: color }}
           />
         </div>
-
+        <Separator orientation="horizontal" className="mx-auto my-1 h-px bg-gray-600" />
         {/* Body */}
-        <div className="px-4 py-3 space-y-2">
+        <div className="space-y-2 px-4 py-3">
           {/* File count */}
           <div className="flex items-center gap-2">
             <FileText size={18} className="text-gray-400" />
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-muted-foreground text-sm font-medium">
               {data.fileCount} file{data.fileCount !== 1 ? "s" : ""}
             </span>
           </div>
 
           {/* Path */}
           <div
-            className="text-sm text-accent truncate font-mono tracking-tight"
+            className="text-accent truncate font-mono text-sm tracking-tight"
             style={{
               background: "#f1f5f9",
               padding: "4px 8px",
@@ -122,7 +115,7 @@ function FolderNode({ data }: any) {
 
         {/* Hover effect overlay */}
         <div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"
           style={{
             background: `linear-gradient(135deg, ${color}10 0%, transparent 100%)`,
           }}
@@ -158,6 +151,7 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     async function load() {
@@ -186,19 +180,19 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
 
   if (loading) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-50">
+      <div className="flex h-screen w-full items-center justify-center bg-linear-to-br from-blue-50 to-indigo-50">
         <div className="text-center">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-blue-200 rounded-full animate-spin border-t-blue-600 mx-auto"></div>
+            <div className="mx-auto h-16 w-16 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
             <Folder
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-600"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-blue-600"
               size={24}
             />
           </div>
           <p className="mt-4 text-lg font-semibold text-gray-700">
             Analyzing repository structure...
           </p>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="mt-1 text-sm text-gray-500">
             {owner}/{repo}
           </p>
         </div>
@@ -208,16 +202,16 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
 
   if (error) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-pink-50">
-        <div className="text-center max-w-md bg-white rounded-xl shadow-xl p-8">
-          <div className="text-6xl mb-4">⚠️</div>
-          <h2 className="text-xl font-bold text-gray-800 mb-2">
+      <div className="flex h-screen w-full items-center justify-center bg-gradient-to-br from-red-50 to-pink-50">
+        <div className="max-w-md rounded-xl bg-white p-8 text-center shadow-xl">
+          <div className="mb-4 text-6xl">⚠️</div>
+          <h2 className="mb-2 text-xl font-bold text-gray-800">
             Failed to Load Repository
           </h2>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="mb-4 text-gray-600">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700"
           >
             Retry
           </button>
@@ -228,26 +222,28 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
 
   if (nodes.length === 0) {
     return (
-      <div className="w-full h-screen flex items-center justify-center">
+      <div className="flex h-screen w-full items-center justify-center">
         <p className="text-gray-500">No folders to display</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full bg-white">
+    <div className={`h-full w-full ${theme === "dark" ? "bg-slate-950" : "bg-gray-100"}`}>
       {/* Header */}
-      <div className="absolute top-3 left-3 z-10 bg-gray-100 rounded-md shadow-md p-3 max-w-sm">
+      <div
+        className={`absolute top-3 left-3 z-10 max-w-sm rounded-md ${theme === "dark" ? "bg-white" : "bg-gray-100"} p-3 shadow-md`}
+      >
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-slate-800 rounded-lg">
+          <div className="rounded-lg bg-slate-800 p-2">
             <Folder className="text-white" size={20} />
           </div>
           <div>
-            <h2 className="font-medium text-sm text-accent">{repo}</h2>
-            <p className="text-xs italic text-gray-500">{owner}</p>
+            <h2 className="text-sm font-medium text-black">{repo}</h2>
+            <p className="text-xs text-gray-500 italic">{owner}</p>
           </div>
         </div>
-        <div className="mt-3 pt-3 border-t border-gray-200">
+        <div className="mt-3 border-t border-gray-200 pt-3">
           <div className="flex items-center justify-between text-xs text-gray-600">
             <span className="font-medium">{nodes.length} folders</span>
             <span className="font-medium">{edges.length} connections</span>
@@ -261,7 +257,7 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
         {!open && (
           <button
             onClick={() => setOpen(true)}
-            className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
+            className={`flex h-10 w-10 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105 ${theme === "dark" ? "bg-white text-black" : "bg-gray-900 text-white"}`}
           >
             <LuLightbulb size={18} />
           </button>
@@ -269,15 +265,10 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
 
         {/* OPEN STATE (LEGEND) */}
         {open && (
-          <div
-            className="
-            w-64 bg-gray-100 rounded-lg shadow-xl p-4
-            animate-in fade-in slide-in-from-top-2 duration-200
-          "
-          >
+          <div className="animate-in fade-in slide-in-from-top-2 w-64 rounded-lg bg-gray-100 p-4 shadow-xl duration-200">
             {/* Header */}
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-medium text-sm text-gray-800 flex items-center gap-1">
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="flex items-center gap-1 text-sm font-medium text-gray-800">
                 <LuLightbulb />
                 Quick Guide
               </h3>
@@ -316,9 +307,9 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
         minZoom={0.2}
         maxZoom={1.5}
       >
-        <Controls className="bg-white rounded-lg shadow-lg" />
-        <MiniMap
-          className="bg-white rounded-lg shadow-lg border-2 border-gray-200"
+        {/* <Controls className="rounded-lg bg-white shadow-lg" /> */}
+        {/* <MiniMap
+          className="rounded"
           nodeColor={(node) => {
             const name = (node?.data?.label as string)?.toLowerCase();
             const colors: { [key: string]: string } = {
@@ -334,12 +325,12 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
             };
             return colors[name] || "#5E80DC";
           }}
-        />
+        /> */}
         <Background
           variant={BackgroundVariant.Dots}
           gap={16}
           size={1}
-          color="#fff"
+          color="#8A8A8A"
         />
       </ReactFlow>
     </div>

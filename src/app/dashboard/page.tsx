@@ -98,46 +98,46 @@ const MainPage = () => {
 
   return (
     <div>
-      <h1 className="font-bold tracking-wide text-3xl">
+      <h1 className="text-3xl font-bold tracking-wide">
         Welcome {userFirstName}
       </h1>
       {/* CARDS */}
-      <div className="grid md:grid-cols-4 gap-4 py-4">
+      <div className="grid gap-4 py-4 md:grid-cols-4">
         {/* 1 */}
         <Card className="bg-linear-to-br from-white/10">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm ">Total Repositories</CardTitle>
-            <GitBranch className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm">Total Repositories</CardTitle>
+            <GitBranch className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold tracking-tight pb-1">
+            <p className="pb-1 text-2xl font-semibold tracking-tight">
               {isLoading ? (
                 <Skeleton className="h-11 w-9" />
               ) : (
                 stats?.totalRepos || 0
               )}
             </p>
-            <p className="text-xs text-muted-foreground">Connected Repos</p>
+            <p className="text-muted-foreground text-xs">Connected Repos</p>
           </CardContent>
         </Card>
         {/* 2 */}
         <Card className="bg-linear-to-br from-white/10">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm">Commits</CardTitle>
-            <GitBranchPlus className="h-4 w-4 text-muted-foreground" />
+            <GitBranchPlus className="text-muted-foreground h-4 w-4" />
           </CardHeader>
 
           <CardContent className="flex">
             {/* Rolling 12 months */}
             <div>
-              <p className="text-2xl font-semibold tracking-tight pb-1">
+              <p className="pb-1 text-2xl font-semibold tracking-tight">
                 {isLoading ? (
                   <Skeleton className="h-11 w-9" />
                 ) : (
-                  stats?.totalCommits ?? 0
+                  (stats?.totalCommits ?? 0)
                 )}
               </p>
-              <p className="text-xs text-muted-foreground tracking-tight">
+              <p className="text-muted-foreground text-xs tracking-tight">
                 Past 12 months
               </p>
             </div>
@@ -147,14 +147,14 @@ const MainPage = () => {
 
             {/* Calendar year */}
             <div>
-              <p className="text-2xl font-semibold pb-1">
+              <p className="pb-1 text-2xl font-semibold">
                 {isLoadingCurrent ? (
                   <Skeleton className="h-11 w-9" />
                 ) : (
-                  contributionCurrent?.totalContributions ?? 0
+                  (contributionCurrent?.totalContributions ?? 0)
                 )}
               </p>
-              <p className="text-xs tracking-tight text-muted-foreground">
+              <p className="text-muted-foreground text-xs tracking-tight">
                 Jan {new Date().getFullYear()} – Today
               </p>
             </div>
@@ -164,46 +164,46 @@ const MainPage = () => {
         {/* 3 */}
         <Card className="bg-linear-to-br from-white/10">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm ">Pull Request</CardTitle>
-            <GitPullRequest className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm">Pull Request</CardTitle>
+            <GitPullRequest className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold tracking-tight pb-1">
+            <p className="pb-1 text-2xl font-semibold tracking-tight">
               {isLoading ? (
                 <Skeleton className="h-11 w-9" />
               ) : (
                 stats?.totalpr || 0
               )}
             </p>
-            <p className="text-xs text-muted-foreground">All time</p>
+            <p className="text-muted-foreground text-xs">All time</p>
           </CardContent>
         </Card>
         {/* 4 */}
         <Card className="bg-linear-to-br from-white/10">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm ">AI Reviews</CardTitle>
-            <Brain className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm">AI Reviews</CardTitle>
+            <Brain className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold tracking-tight pb-1">
+            <p className="pb-1 text-2xl font-semibold tracking-tight">
               {isLoading ? (
                 <Skeleton className="h-11 w-9" />
               ) : (
                 stats?.totalReviews || 0
               )}
             </p>
-            <p className="text-xs text-muted-foreground">Generate Reviews</p>
+            <p className="text-muted-foreground text-xs">Generate Reviews</p>
           </CardContent>
         </Card>
       </div>
       <Separator className="my-2" />
 
-      <h1 className="text-xl my-4">
+      <h1 className="my-4 text-xl">
         Contribution HeatMaps{" "}
-        <LuChartBarIncreasing className="inline ml-2 w-5 h-5" />
+        <LuChartBarIncreasing className="ml-2 inline h-5 w-5" />
       </h1>
       {/* HEAT MAPS */}
-      <div className="flex-1 w-full px-10 my-4">
+      <div className="my-4 w-full flex-1 px-10">
         <Card>
           <CardHeader className="flex items-center justify-between space-y-0 pb-2">
             <div className="space-y-1">
@@ -211,7 +211,7 @@ const MainPage = () => {
                 Contributions{" "}
                 {range === "past" ? "Past 12 Months" : "Current Year"}
               </CardTitle>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 View your GitHub commits.
               </p>
             </div>
@@ -247,15 +247,15 @@ const MainPage = () => {
 
       {/* CHARTS OVERVIEW */}
 
-      <h1 className="text-xl my-5">
-        Activity Stats <LuActivity className="inline ml-2 w-5 h-5" />
+      <h1 className="my-5 text-xl">
+        Activity Stats <LuActivity className="ml-2 inline h-5 w-5" />
       </h1>
-      <div className="w-full px-10 mt-4">
+      <div className="mt-4 w-full px-10">
         <Card className="bg-white/10">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <div className="space-y-1">
               <CardTitle className="text-base">Activity Overview</CardTitle>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Monthly Breakdown of Commits , PR and AI reviews (Last 6 Months
                 )
               </p>
@@ -291,7 +291,7 @@ const MainPage = () => {
           </CardHeader>
           <CardContent className="px-4 pb-4">
             {isLoadingActivity ? (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Loading activity data...
               </p>
             ) : (
@@ -428,22 +428,22 @@ const MainPage = () => {
                     />
                   </AreaChart>
                 </ChartContainer>
-                <div className="flex items-center justify-center gap-4 mt-3">
+                <div className="mt-3 flex items-center justify-center gap-4">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-[hsl(217,91%,60%)]" />
-                    <span className="text-xs text-muted-foreground">
+                    <div className="h-2 w-2 rounded-full bg-[hsl(217,91%,60%)]" />
+                    <span className="text-muted-foreground text-xs">
                       Commits
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-[hsl(271,91%,65%)]" />
-                    <span className="text-xs text-muted-foreground">
+                    <div className="h-2 w-2 rounded-full bg-[hsl(271,91%,65%)]" />
+                    <span className="text-muted-foreground text-xs">
                       Pull Requests
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-[hsl(160,84%,39%)]" />
-                    <span className="text-xs text-muted-foreground">
+                    <div className="h-2 w-2 rounded-full bg-[hsl(160,84%,39%)]" />
+                    <span className="text-muted-foreground text-xs">
                       AI Reviews
                     </span>
                   </div>

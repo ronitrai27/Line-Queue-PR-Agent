@@ -104,13 +104,13 @@ const RepoPage = () => {
   if (isLoading) {
     return (
       <div>
-        <h1 className="font-bold tracking-wide text-3xl">Repositories</h1>
-        <h3 className="text-base text-muted-foreground mt-1">
+        <h1 className="text-3xl font-bold tracking-wide">Repositories</h1>
+        <h3 className="text-muted-foreground mt-1 text-base">
           Manage your all Github Repositories{" "}
-          <GithubIcon className="inline ml-2 w-4 h-4" />
+          <GithubIcon className="ml-2 inline h-4 w-4" />
         </h3>
 
-        <div className="grid gap-4 mt-10 w-full max-w-[90%] mx-auto">
+        <div className="mx-auto mt-10 grid w-full max-w-[90%] gap-4">
           {Array.from({ length: 5 }).map((_, index) => (
             <RepositoryCardSkeleton key={index} />
           ))}
@@ -121,15 +121,15 @@ const RepoPage = () => {
 
   return (
     <div className="">
-      <h1 className="font-bold tracking-wide text-3xl">Repositories</h1>
-      <h3 className="text-base text-muted-foreground mt-1">
+      <h1 className="text-3xl font-bold tracking-wide">Repositories</h1>
+      <h3 className="text-muted-foreground mt-1 text-base">
         Manage your all Github Repositories{" "}
-        <GithubIcon className="inline ml-2 w-4 h-4" />
+        <GithubIcon className="ml-2 inline h-4 w-4" />
       </h3>
 
-      <div className="flex items-center justify-between w-full mt-8 px-4">
-        <div className="relative w-full max-w-[80%] mx-auto">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+      <div className="mt-8 flex w-full items-center justify-between px-4">
+        <div className="relative mx-auto w-full max-w-[80%]">
+          <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
           <Input
             placeholder="Search repositories"
             className="pl-8"
@@ -143,23 +143,23 @@ const RepoPage = () => {
         </Button>
       </div>
 
-      <div className="grid gap-4 mt-10 w-full max-w-[90%] mx-auto">
+      <div className="mx-auto mt-10 grid w-full max-w-[90%] gap-4">
         {filteredRepos.map((repo: Repository) => (
           <Card
             key={repo.id}
-            className="hover:-translate-x-3 hover:shadow-md transition-all duration-300 hover:bg-linear-to-br hover:from-white/10 hover:to-transparent px-2 py-4"
+            className="px-2 py-4 transition-all duration-300 hover:-translate-x-3 hover:bg-linear-to-br hover:from-white/10 hover:to-transparent hover:shadow-md"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium leading-none">
+                  <p className="text-sm leading-none font-medium">
                     {repo.name}
                   </p>
                   {repo.isConnected && (
                     <Badge variant="secondary">Connected</Badge>
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   {repo.description
                     ? repo.description
                     : "No description provided..."}
@@ -170,12 +170,12 @@ const RepoPage = () => {
                   {repo.language ? repo.language : "Unknown"}
                 </Badge>
                 <p>
-                  <LuStar className="inline ml-2 w-4 h-4 fill-yellow-400 text-yellow-400" />{" "}
+                  <LuStar className="ml-2 inline h-4 w-4 fill-yellow-400 text-yellow-400" />{" "}
                   {repo.stargazers_count}
                 </p>
               </div>
             </CardHeader>
-            <CardContent className="grid gap-4 -mt-1">
+            <CardContent className="-mt-1 grid gap-4">
               <div className="flex gap-2">
                 <Button variant="ghost" size="icon" asChild>
                   <a
@@ -183,7 +183,7 @@ const RepoPage = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="h-4 w-4" />
                   </a>
                 </Button>
 
@@ -197,8 +197,8 @@ const RepoPage = () => {
                   {localConnectingId === repo.id
                     ? "Connecting..."
                     : repo.isConnected
-                    ? "Connected"
-                    : "Connect"}
+                      ? "Connected"
+                      : "Connect"}
                 </Button>
               </div>
             </CardContent>
@@ -206,13 +206,13 @@ const RepoPage = () => {
         ))}
       </div>
 
-      <div className="py-4 w-full max-w-[90%] mx-auto" ref={observerTarget}>
+      <div className="mx-auto w-full max-w-[90%] py-4" ref={observerTarget}>
         {isFetchingNextPage && <RepositoryCardSkeleton />}
         {!hasNextPage ||
           (allRepos.length === 0 && (
-            <p className="text-center text-muted-foreground">
+            <p className="text-muted-foreground text-center">
               No More Repositories Found{" "}
-              <GhostIcon className="inline ml-2 w-4 h-4" />
+              <GhostIcon className="ml-2 inline h-4 w-4" />
             </p>
           ))}
       </div>

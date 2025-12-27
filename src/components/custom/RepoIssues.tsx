@@ -58,7 +58,7 @@ export function RepoIssues({ githubId }: { githubId: string }) {
       <div className="flex gap-6 border-b">
         <button
           onClick={() => setFilter("open")}
-          className={`pb-3 px-2 font-medium transition-colors ${
+          className={`px-2 pb-3 font-medium transition-colors ${
             filter === "open"
               ? "border-b-2 border-green-600 text-green-600"
               : "text-gray-600 hover:text-gray-900"
@@ -68,7 +68,7 @@ export function RepoIssues({ githubId }: { githubId: string }) {
         </button>
         <button
           onClick={() => setFilter("closed")}
-          className={`pb-3 px-2 font-medium transition-colors ${
+          className={`px-2 pb-3 font-medium transition-colors ${
             filter === "closed"
               ? "border-b-2 border-purple-600 text-purple-600"
               : "text-gray-600 hover:text-gray-900"
@@ -78,7 +78,7 @@ export function RepoIssues({ githubId }: { githubId: string }) {
         </button>
         <button
           onClick={() => setFilter("all")}
-          className={`pb-3 px-2 font-medium transition-colors ${
+          className={`px-2 pb-3 font-medium transition-colors ${
             filter === "all"
               ? "border-b-2 border-gray-900 text-gray-900"
               : "text-gray-600 hover:text-gray-900"
@@ -91,7 +91,7 @@ export function RepoIssues({ githubId }: { githubId: string }) {
       {/* Issues List */}
       <div className="space-y-3">
         {issues.length === 0 ? (
-          <div className="text-center py-12">
+          <div className="py-12 text-center">
             <p className="text-gray-500">No {filter} issues found</p>
           </div>
         ) : (
@@ -101,12 +101,12 @@ export function RepoIssues({ githubId }: { githubId: string }) {
               href={issue.html_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block p-4 border rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all"
+              className="block rounded-lg border p-4 transition-all hover:border-gray-300 hover:bg-gray-50"
             >
               <div className="flex items-start gap-3">
                 {/* Status Badge */}
                 <span
-                  className={`mt-1 px-2 py-1 text-xs font-semibold rounded ${
+                  className={`mt-1 rounded px-2 py-1 text-xs font-semibold ${
                     issue.state === "open"
                       ? "bg-green-100 text-green-700"
                       : "bg-purple-100 text-purple-700"
@@ -116,8 +116,8 @@ export function RepoIssues({ githubId }: { githubId: string }) {
                 </span>
 
                 {/* Issue Details */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-gray-900 mb-2">
+                <div className="min-w-0 flex-1">
+                  <h3 className="mb-2 font-semibold text-gray-900">
                     #{issue.number} {issue.title}
                   </h3>
 
@@ -126,7 +126,7 @@ export function RepoIssues({ githubId }: { githubId: string }) {
                       <img
                         src={issue.user.avatar_url}
                         alt={issue.user.login}
-                        className="w-5 h-5 rounded-full"
+                        className="h-5 w-5 rounded-full"
                       />
                       <span>{issue.user.login}</span>
                     </div>

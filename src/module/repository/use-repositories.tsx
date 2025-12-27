@@ -3,7 +3,6 @@ import React from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchrepo } from "@/module/repository/index";
 
-
 // ========================================
 // INFINITE SCROLLING OF REPOS
 // ========================================
