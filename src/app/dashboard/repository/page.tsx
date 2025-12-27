@@ -159,7 +159,7 @@ const RepoPage = () => {
                     <Badge variant="secondary">Connected</Badge>
                   )}
                 </div>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-muted-foreground text-sm line-clamp-2 max-w-180">
                   {repo.description
                     ? repo.description
                     : "No description provided..."}

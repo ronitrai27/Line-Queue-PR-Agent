@@ -14,7 +14,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
-import { LuPlay } from "react-icons/lu";
+import { LuGitBranchPlus, LuPlay } from "react-icons/lu";
 import { RepositoryCardSkeleton } from "@/components/custom/RepoSkeleton";
 import {
   Sheet,
@@ -107,7 +107,7 @@ const ActionPage = () => {
                       </a>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-4">
                       <Button
                         size="sm"
                         className="cursor-pointer text-xs"
@@ -119,7 +119,7 @@ const ActionPage = () => {
                             owner: repo.owner,
                             name: repo.name,
                           });
-                          toast.success("Action Running Successfully");
+                          toast.info("Visualizing Repository");
                           router.push(
                             `/dashboard/actions/visualize/${encodeURIComponent(
                               repo.owner
@@ -127,7 +127,29 @@ const ActionPage = () => {
                           );
                         }}
                       >
-                        Action <LuPlay className="ml-1 inline h-4 w-4" />
+                        3D Visualize <LuPlay className="ml-1 inline h-4 w-4" />
+                      </Button>
+
+                       <Button
+                        size="sm"
+                        className="cursor-pointer text-xs"
+                        onClick={() => {
+                          setSelectedRepo({
+                            id: repo.githubId.toString(),
+                            fullName: repo.fullName,
+                            url: repo.url,
+                            owner: repo.owner,
+                            name: repo.name,
+                          });
+                          toast.info("Collecting Stats for the Repository");
+                          router.push(
+                            `/dashboard/actions/stats/${encodeURIComponent(
+                              repo.owner
+                            )}/${repo.name}`
+                          );
+                        }}
+                      >
+                        Stats <LuGitBranchPlus className="ml-1 inline h-4 w-4" />
                       </Button>
                     </div>
                   </div>

@@ -188,7 +188,7 @@ export const createWebhook = async (owner: string, repo: string) => {
 };
 
 // ===========================
-// TESTING ISSUES
+// GETTING THE ISSUES
 // ===========================
 export const getRepoIssues = async (
   githubId: string,
@@ -495,4 +495,114 @@ export async function postReviewComment(
     issue_number: prNumber,
     body: `## AI CODE REVIEW \n\n${review} \n\n -------\n *Powered By Line-Queue*`,
   });
+}
+
+// ===============================
+// GET COLLABORATORS
+// ===============================
+export async function getCollaborators(owner: string, repo: string) {
+  try {
+    const token = await getGithubToken();
+    const octokit = new Octokit({ auth: token });
+
+    const { data: collaborators } = await octokit.rest.repos.listCollaborators({
+      owner,
+      repo,
+      per_page: 100,
+    });
+
+    // Get contributor stats (includes commit counts)
+    const { data: stats } = await octokit.rest.repos.getContributorsStats({
+      owner,
+      repo,
+    });
+
+    // Calculate total commits
+    const totalCommits =
+      stats?.reduce((sum, contributor) => sum + contributor.total, 0) || 0;
+
+    // Merge data
+    const collaboratorsWithStats = collaborators.map((collab) => {
+      const stat = stats?.find((s) => s.author?.login === collab.login);
+      const commits = stat?.total || 0;
+      const percentage =
+        totalCommits > 0 ? ((commits / totalCommits) * 100).toFixed(2) : "0";
+
+      return {
+        username: collab.login,
+        avatar: collab.avatar_url,
+        profileUrl: collab.html_url,
+        permissions: collab.permissions,
+        commits,
+        contributionPercentage: percentage,
+      };
+    });
+
+    console.log(
+      "collaboratorsWithStats and totalCommits---------->",
+      collaboratorsWithStats,
+      totalCommits
+    );
+    return {
+      collaborators: collaboratorsWithStats,
+      totalCommits,
+    };
+  } catch (error) {
+    console.error("Error fetching collaborators:", error);
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch collaborators"
+    );
+  }
+}
+
+// ===============================
+// ADD A COLLABORATORS
+// ===============================
+export async function addCollaborator(
+  owner: string,
+  repo: string,
+  username: string,
+  permission: "pull" | "push" | "admin" | "maintain" | "triage" = "push"
+) {
+  const token = await getGithubToken();
+  const octokit = new Octokit({ auth: token });
+
+  try {
+    await octokit.rest.repos.addCollaborator({
+      owner,
+      repo,
+      username,
+      permission,
+    });
+
+    return { success: true, message: `Added ${username} as collaborator` };
+  } catch (error: any) {
+    console.error("Error adding collaborator:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// ===============================
+// REMOVE A COLLABORATORS
+// ===============================
+export async function removeCollaborator(
+  owner: string,
+  repo: string,
+  username: string
+) {
+  const token = await getGithubToken();
+  const octokit = new Octokit({ auth: token });
+
+  try {
+    await octokit.rest.repos.removeCollaborator({
+      owner,
+      repo,
+      username,
+    });
+
+    return { success: true, message: `Removed ${username} from collaborators` };
+  } catch (error: any) {
+    console.error("Error removing collaborator:", error);
+    return { success: false, error: error.message };
+  }
 }
