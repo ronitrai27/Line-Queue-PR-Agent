@@ -555,6 +555,50 @@ export async function getCollaborators(owner: string, repo: string) {
   }
 }
 
+// ================================
+// GET ALL CONTRIBUTORS
+// =================================
+export async function getContributors(owner: string, repo: string) {
+  try {
+    const token = await getGithubToken();
+    const octokit = new Octokit({ auth: token });
+
+    const { data: stats } = await octokit.rest.repos.getContributorsStats({
+      owner,
+      repo,
+    });
+
+    const totalCommits =
+      stats?.reduce((sum, contributor) => sum + contributor.total, 0) || 0;
+
+    // Map contributors with stats
+    const contributorsWithStats =
+      stats?.map((stat) => {
+        const commits = stat.total || 0;
+        const percentage =
+          totalCommits > 0 ? ((commits / totalCommits) * 100).toFixed(2) : "0";
+
+        return {
+          username: stat.author?.login || "Unknown",
+          avatar: stat.author?.avatar_url || "",
+          profileUrl: stat.author?.html_url || "",
+          commits,
+          contributionPercentage: percentage,
+        };
+      }) || [];
+
+    return {
+      contributors: contributorsWithStats,
+      totalCommits,
+    };
+  } catch (error) {
+    console.error("Error fetching contributors:", error);
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch contributors"
+    );
+  }
+}
+
 // ===============================
 // ADD A COLLABORATORS
 // ===============================

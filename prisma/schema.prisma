@@ -64,6 +64,35 @@ model Review {
   @@map("review")
 }
 
+model CommitActivity {
+  id              String   @id @default(cuid())
+  
+  // Author/Owner
+  authorName      String
+  authorEmail     String
+  authorUsername  String
+  authorAvatar    String
+  // Commit details
+  commitId        String   @unique
+  commitMessage   String   @db.Text
+  commitUrl       String
+  timestamp       DateTime
+  createdAt       DateTime @default(now())
+  // Repo info
+  repoOwner       String
+  repoName        String
+  repoFullName    String
+  branch          String
+  repoUrl         String
+  // Changes
+  filesChanged    Int
+  changes         Json     // { added: [], modified: [], removed: [] }
+  
+  @@index([repoFullName, timestamp])
+  @@index([authorUsername, timestamp])
+  @@index([branch])
+}
+
 model Session {
   id        String   @id
   expiresAt DateTime

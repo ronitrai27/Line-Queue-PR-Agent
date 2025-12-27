@@ -81,7 +81,6 @@ export default function ReviewsPage() {
                   })}
                 </p>
 
-                {/* Replace the prose div with Message component */}
                 <Message from="assistant" className="mb-4">
                   <MessageContent>
                     <MessageResponse>{review.review.substring(0, 400)}</MessageResponse>

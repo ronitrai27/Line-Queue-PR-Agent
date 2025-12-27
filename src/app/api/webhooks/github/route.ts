@@ -1,3 +1,4 @@
+import { handlePushEvent } from "@/module/actions";
 import { reveiewPullRequest } from "@/module/ai";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -15,12 +16,14 @@ export async function POST(req: NextRequest) {
     // PUSH
     // ===============================
     if (event === "push") {
-      // console.log("push event", body);
-      console.log("Push event received:", {
-        repo: body.repository.full_name,
-        pusher: body.pusher.name,
-        commits: body.commits.length,
-      });
+      console.log("============Pushed Event Triggered !============");
+      handlePushEvent(body)
+        .then((savedCommits) => {
+          console.log(`✅ Processed ${savedCommits.length} commit(s)`);
+        })
+        .catch((error) => {
+          console.error("❌ Error processing push event:", error);
+        });
     }
     // ===============================
     // ISSUES

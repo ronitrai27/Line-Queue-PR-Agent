@@ -66,6 +66,7 @@ export default function StatsPage() {
         {owner}/{repo}
       </p>
 
+      {/* QUICK INFO ABOUT TOTAL COMMITS / COLLAB & CONTRI / ISSUES  */}
       <div className="my-6 grid gap-6 px-6 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -92,82 +93,87 @@ export default function StatsPage() {
         <Card></Card>
       </div>
 
-      <div className="px-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Collaborators</CardTitle>
-            <CardDescription>
-              Team members and their contributions
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {collaborators
-                .sort((a, b) => b.commits - a.commits)
-                .map((collab) => (
-                  <div
-                    key={collab.username}
-                    className="bg-card hover:bg-accent flex items-center justify-between rounded-lg border p-4 transition-colors"
-                  >
-                    <div className="flex flex-1 items-center gap-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage
-                          src={collab.avatar}
-                          alt={collab.username}
-                        />
-                        <AvatarFallback>
-                          {collab.username.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+      <div className="flex gap-10">
+        {/* TABS FOR CONTRIBUTER / COLLABORATORS / ISSUES */}
+        <div className="px-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Collaborators</CardTitle>
+              <CardDescription>
+                Team members and their contributions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {collaborators
+                  .sort((a, b) => b.commits - a.commits)
+                  .map((collab) => (
+                    <div
+                      key={collab.username}
+                      className="bg-card hover:bg-accent flex items-center justify-between rounded-lg border p-4 transition-colors"
+                    >
+                      <div className="flex flex-1 items-center gap-4">
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage
+                            src={collab.avatar}
+                            alt={collab.username}
+                          />
+                          <AvatarFallback>
+                            {collab.username.slice(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
 
-                      <div className="min-w-0 flex-1">
-                        <a
-                          href={collab.profileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-semibold hover:underline"
-                        >
-                          {collab.username}
-                        </a>
-                        <div className="mt-1 flex items-center gap-2">
-                          <span className="text-muted-foreground text-sm">
-                            {collab.commits.toLocaleString()} commits
-                          </span>
-                          <span className="text-muted-foreground text-sm">
-                            •
-                          </span>
-                          <span className="text-muted-foreground text-sm">
-                            {collab.contributionPercentage}% of total
-                          </span>
+                        <div className="min-w-0 flex-1">
+                          <a
+                            href={collab.profileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold hover:underline"
+                          >
+                            {collab.username}
+                          </a>
+                          <div className="mt-1 flex items-center gap-2">
+                            <span className="text-muted-foreground text-sm">
+                              {collab.commits.toLocaleString()} commits
+                            </span>
+                            <span className="text-muted-foreground text-sm">
+                              •
+                            </span>
+                            <span className="text-muted-foreground text-sm">
+                              {collab.contributionPercentage}% of total
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="flex items-center gap-2">
-                      {collab.permissions?.admin && (
-                        <Badge variant="destructive">Admin</Badge>
-                      )}
-                      {collab.permissions?.maintain && (
-                        <Badge variant="secondary">Maintain</Badge>
-                      )}
-                      {collab.permissions?.push && (
-                        <Badge variant="outline">Push</Badge>
-                      )}
-                      {collab.permissions?.pull && (
-                        <Badge variant="outline">Pull</Badge>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {collab.permissions?.admin && (
+                          <Badge variant="destructive">Admin</Badge>
+                        )}
+                        {collab.permissions?.maintain && (
+                          <Badge variant="secondary">Maintain</Badge>
+                        )}
+                        {collab.permissions?.push && (
+                          <Badge variant="outline">Push</Badge>
+                        )}
+                        {collab.permissions?.pull && (
+                          <Badge variant="outline">Pull</Badge>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
-              {collaborators.length === 0 && (
-                <p className="text-muted-foreground py-8 text-center">
-                  No collaborators found
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                {collaborators.length === 0 && (
+                  <p className="text-muted-foreground py-8 text-center">
+                    No collaborators found
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        {/* ALL Recent COMMITS */}
+
       </div>
     </div>
   );
