@@ -40,12 +40,12 @@ const Logout = ({
       </span>
 
       <Dialog open={open}>
-        <DialogContent className="sm:max-w-xs text-center">
+        <DialogContent className="text-center sm:max-w-xs">
           <DialogHeader>
             <DialogTitle className="text-base">Logging out</DialogTitle>
           </DialogHeader>
 
-          <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+          <div className="text-muted-foreground flex items-center justify-center gap-2 py-4 text-sm">
             <Loader2 className="h-4 w-4 animate-spin" />
             Please wait…
           </div>

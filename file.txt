@@ -81,3 +81,15 @@ After recurssion we get
 
 
 and now at last we are storing to vector db.
+========================================================================================
+## getPullReqDiff
+What getPullReqDiff does:
+
+Fetches PR metadata (title, description)
+Gets the diff - the actual code changes in a special "diff format" that shows:
+
+Which files changed
+What lines were added (marked with +)
+What lines were removed (marked with -)
+Context around the changes
+===============================================================================================

@@ -28,7 +28,6 @@ type Session = {
   };
 };
 
-
 type AuthError = {
   code?: string;
   message?: string;

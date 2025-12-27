@@ -72,6 +72,8 @@ export async function retrieveContext(
     includeMetadata: true,
   });
 
-//   return result.matches;
-return result.matches.map(match => match.metadata?.content as string).filter(Boolean);
+  //   return result.matches;
+  return result.matches
+    .map((match) => match.metadata?.content as string)
+    .filter(Boolean);
 }

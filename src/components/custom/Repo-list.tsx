@@ -91,7 +91,7 @@ export function RepositoryListPage() {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="font-medium mb-2">
+            <CardTitle className="mb-2 font-medium">
               Connected Repositories
             </CardTitle>
             <CardDescription>Manage your connected Github Repo</CardDescription>
@@ -105,7 +105,7 @@ export function RepositoryListPage() {
                 <Button
                   size="sm"
                   variant="destructive"
-                  className="text-sm cursor-pointer"
+                  className="cursor-pointer text-sm"
                 >
                   Disconnect All
                 </Button>
@@ -139,23 +139,23 @@ export function RepositoryListPage() {
 
       <CardContent>
         {!repo || repo.length == 0 ? (
-          <div className="text-sm text-muted-foreground">
+          <div className="text-muted-foreground text-sm">
             No repositories connected
           </div>
         ) : (
           <div className="space-y-4">
             {repo.map((repo) => (
-              <div className="bg-white/10 p-4 rounded-lg" key={repo.id}>
+              <div className="rounded-lg bg-white/10 p-4" key={repo.id}>
                 <div className="flex justify-between">
-                  <div className="flex gap-6 mb-2">
-                    <h2 className=" capitalize">{repo?.fullName}</h2>
+                  <div className="mb-2 flex gap-6">
+                    <h2 className="capitalize">{repo?.fullName}</h2>
                     <a
                       href={repo?.url}
                       target="_blank"
                       rel="noreferrer"
                       className=""
                     >
-                      <ExternalLink className="inline ml-2 w-4 h-4" />
+                      <ExternalLink className="ml-2 inline h-4 w-4" />
                     </a>
                   </div>
 

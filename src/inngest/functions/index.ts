@@ -3,7 +3,6 @@ import prisma from "@/lib/db";
 import { indexCodebase } from "@/module/ai/rag";
 import { getRepoFileContents } from "@/module/github/github";
 
-
 export const indexRepo = inngest.createFunction(
   { id: "index-repo" },
   { event: "repository-connected" },

@@ -68,16 +68,16 @@ export const connectRepo = async (
   }
 
   // INDEXING OF REPO FOR RAG=====================
-  try{
+  try {
     await inngest.send({
-      name:"repository-connected",
-      data:{
+      name: "repository-connected",
+      data: {
         owner,
         repo,
         userId: session.user.id,
-      }
-    })
-  } catch(error){
+      },
+    });
+  } catch (error) {
     console.log("Failed to trigger Indexing, error: ", error);
   }
 

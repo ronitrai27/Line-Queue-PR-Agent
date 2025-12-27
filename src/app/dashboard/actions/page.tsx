@@ -32,7 +32,7 @@ type SelectedRepo = {
   name: string; // repo name
   fullName: string;
   url: string;
-  owner?: string;  // owner name
+  owner?: string; // owner name
 };
 
 const ActionPage = () => {
@@ -55,27 +55,27 @@ const ActionPage = () => {
   if (isLoading)
     return (
       <div>
-        (<h1 className="font-bold tracking-wide text-3xl">Actions </h1>
-        <h3 className="text-base text-muted-foreground mt-1 mb-5">
+        <h1 className="text-3xl font-bold tracking-wide">Actions </h1>
+        <h3 className="text-muted-foreground mt-1 mb-5 text-base">
           Manage Your Workflows & Tasks Here
-          <Play className="inline ml-2 w-4 h-4" />
+          <Play className="ml-2 inline h-4 w-4" />
         </h3>
-        <RepositoryCardSkeleton />)
+        <RepositoryCardSkeleton />
       </div>
     );
   return (
     <div className="">
-      <h1 className="font-bold tracking-wide text-3xl">Actions </h1>
-      <h3 className="text-base text-muted-foreground mt-1 mb-5">
+      <h1 className="text-3xl font-bold tracking-wide">Actions </h1>
+      <h3 className="text-muted-foreground mt-1 mb-5 text-base">
         Manage Your Workflows & Tasks Here
-        <Play className="inline ml-2 w-4 h-4" />
+        <Play className="ml-2 inline h-4 w-4" />
       </h3>
 
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="font-medium mb-2">
+              <CardTitle className="mb-2 font-medium">
                 Connected Repositories
               </CardTitle>
               <CardDescription>
@@ -87,23 +87,23 @@ const ActionPage = () => {
 
         <CardContent>
           {!repo || repo.length == 0 ? (
-            <div className="text-sm text-muted-foreground">
+            <div className="text-muted-foreground text-sm">
               No repositories connected
             </div>
           ) : (
             <div className="space-y-4">
               {repo.map((repo) => (
-                <div className="bg-white/10 p-4 rounded-lg" key={repo.id}>
+                <div className="rounded-lg bg-white/10 p-4" key={repo.id}>
                   <div className="flex justify-between">
-                    <div className="flex gap-6 mb-2">
-                      <h2 className=" capitalize">{repo?.fullName}</h2>
+                    <div className="mb-2 flex gap-6">
+                      <h2 className="capitalize">{repo?.fullName}</h2>
                       <a
                         href={repo?.url}
                         target="_blank"
                         rel="noreferrer"
                         className=""
                       >
-                        <ExternalLink className="inline ml-2 w-4 h-4" />
+                        <ExternalLink className="ml-2 inline h-4 w-4" />
                       </a>
                     </div>
 
@@ -127,7 +127,7 @@ const ActionPage = () => {
                           );
                         }}
                       >
-                        Action <LuPlay className="inline ml-1 w-4 h-4" />
+                        Action <LuPlay className="ml-1 inline h-4 w-4" />
                       </Button>
                     </div>
                   </div>
