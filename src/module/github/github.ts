@@ -478,7 +478,7 @@ export async function getPullReqDiff(
 }
 
 // ===============================
-// POST COMMENT
+// POST COMMENT PR
 // ===============================
 
 export async function postReviewComment(

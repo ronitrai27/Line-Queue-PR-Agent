@@ -16,6 +16,7 @@ export async function handlePushEvent(body: any) {
   const pusher = body.pusher;
 
   console.log(`📦 Processing ${commits.length} commit(s) to ${repo}/${branch}`);
+  console.log("commits by owner and on reponame", owner, repoName);
 
   const commitActivities = commits.map((commit: any) => {
     return {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -15,7 +15,13 @@ import {
   Position,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { ExternalLink, Folder, FileText } from "lucide-react";
+import {
+  ExternalLink,
+  Folder,
+  FileText,
+  ChevronRight,
+  ChevronDown,
+} from "lucide-react";
 
 import { generateRepoVisualization } from ".";
 import { LuLightbulb, LuX } from "react-icons/lu";
@@ -24,22 +30,12 @@ import { Separator } from "@/components/ui/separator";
 
 function FolderNode({ data }: any) {
   const isRoot = data.level === 0;
+  const { isCollapsible, isCollapsed, onToggleCollapse } = data;
+
   const getFolderColor = (name: string): string => {
     const colorMap: { [key: string]: string } = {
       src: "#86A5E7",
       app: "#86A5E7",
-      // api: "#86A5E7",
-      // components: "#86A5E7",
-      // lib: "#86A5E7",
-      // utils: "#86A5E7",
-      // public: "#86A5E7",
-      // styles: "#86A5E7",
-      // config: "#86A5E7",
-      // types: "#86A5E7",
-      // hooks: "#86A5E7",
-      // services: "#86A5E7",
-      // routes: "#86A5E7",
-      // middleware: "#86A5E7",
     };
     return colorMap[name.toLowerCase()] || "#DEE3FF";
   };
@@ -50,7 +46,7 @@ function FolderNode({ data }: any) {
     <div
       className="group relative"
       style={{
-        width: isRoot ? "250px" : "220px",
+        width: isRoot ? "280px" : "240px",
       }}
     >
       <Handle
@@ -69,11 +65,36 @@ function FolderNode({ data }: any) {
         style={{
           border: `1px dashed ${color}`,
         }}
-        onClick={() => window.open(data.githubUrl, "_blank")}
       >
         <div className="flex items-center gap-2 px-4 py-2">
-          <Folder className="shrink-0" size={20} />
-          <div className="min-w-0 flex-1">
+          {/* Collapse/Expand Button */}
+          {isCollapsible && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleCollapse?.();
+              }}
+              className="shrink-0 rounded p-1 transition-colors hover:bg-gray-800"
+              title={isCollapsed ? "Expand children" : "Collapse children"}
+            >
+              {isCollapsed ? (
+                <ChevronRight size={20} className="text-blue-400" />
+              ) : (
+                <ChevronDown size={20} className="text-blue-400" />
+              )}
+            </button>
+          )}
+
+          <Folder
+            className="shrink-0"
+            size={20}
+            style={{ color: isCollapsed ? "#9CA3AF" : color }}
+          />
+
+          <div
+            className="min-w-0 flex-1"
+            onClick={() => window.open(data.githubUrl, "_blank")}
+          >
             <div
               className="truncate text-sm font-bold text-white capitalize"
               style={{
@@ -83,16 +104,23 @@ function FolderNode({ data }: any) {
               {data.label}
             </div>
           </div>
+
           <ExternalLink
-            className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+            className="shrink-0 cursor-pointer opacity-0 transition-opacity group-hover:opacity-100"
             size={14}
             style={{ color: color }}
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(data.githubUrl, "_blank");
+            }}
           />
         </div>
+
         <Separator
           orientation="horizontal"
           className="mx-auto my-1 h-px bg-gray-600"
         />
+
         {/* Body */}
         <div className="space-y-2 px-4 py-3">
           {/* File count */}
@@ -114,6 +142,15 @@ function FolderNode({ data }: any) {
           >
             {data.path || "/"}
           </div>
+
+          {/* Collapsed Indicator */}
+          {isCollapsed && (
+            <div className="flex items-center gap-1.5 pt-1">
+              <span className="inline-flex items-center rounded-full border bg-white px-2 py-0.5 text-xs font-medium text-black">
+                hidden
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Hover effect overlay */}
@@ -139,7 +176,7 @@ function FolderNode({ data }: any) {
   );
 }
 
-const nodeTypes = {
+export const nodeTypes = {
   custom: FolderNode,
 };
 
@@ -148,13 +185,16 @@ interface RepoVisualizerProps {
   repo: string;
 }
 
-export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
+export default function RepoVisualizer2({ owner, repo }: RepoVisualizerProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
+
+  // Track collapsed state for each node individually
+  const [collapsedNodes, setCollapsedNodes] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     async function load() {
@@ -179,7 +219,87 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
     }
 
     load();
-  }, [owner, repo]);
+  }, [owner, repo, setNodes, setEdges]);
+
+  // Get DIRECT children of a node (not descendants)
+  const getDirectChildren = useCallback(
+    (nodeId: string): string[] => {
+      return edges
+        .filter((edge) => edge.source === nodeId)
+        .map((edge) => edge.target);
+    },
+    [edges]
+  );
+
+  // Check if a node has children
+  const hasChildren = useCallback(
+    (nodeId: string): boolean => {
+      return edges.some((edge) => edge.source === nodeId);
+    },
+    [edges]
+  );
+
+  // Toggle collapse for a specific node (only affects direct children)
+  const toggleNodeCollapse = (nodeId: string) => {
+    setCollapsedNodes((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
+  };
+
+  // Update nodes with collapse state and callbacks
+  useEffect(() => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        const nodeHasChildren = edges.some((edge) => edge.source === node.id);
+        const isCollapsed = collapsedNodes.has(node.id);
+
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            isCollapsible: nodeHasChildren,
+            isCollapsed,
+            onToggleCollapse: () => toggleNodeCollapse(node.id),
+          },
+          // Hide this node if its DIRECT parent is collapsed
+          hidden: edges.some(
+            (edge) => edge.target === node.id && collapsedNodes.has(edge.source)
+          ),
+        };
+      })
+    );
+  }, [collapsedNodes, edges, setNodes]);
+
+  // Update edges visibility separately
+  useEffect(() => {
+    setEdges((eds) =>
+      eds.map((edge) => {
+        // Hide edge if source is collapsed
+        return {
+          ...edge,
+          hidden: collapsedNodes.has(edge.source),
+        };
+      })
+    );
+  }, [collapsedNodes, setEdges]);
+
+  // Collapse all parent nodes
+  const collapseAll = useCallback(() => {
+    const parentNodes = nodes.filter((node) => hasChildren(node.id));
+    const allParentIds = new Set(parentNodes.map((n) => n.id));
+    setCollapsedNodes(allParentIds);
+  }, [nodes, hasChildren]);
+
+  // Expand all nodes
+  const expandAll = useCallback(() => {
+    setCollapsedNodes(new Set());
+  }, []);
 
   if (loading) {
     return (
@@ -205,7 +325,7 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
 
   if (error) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-gradient-to-br from-red-50 to-pink-50">
+      <div className="flex h-screen w-full items-center justify-center bg-linear-to-br from-red-50 to-pink-50">
         <div className="max-w-md rounded-xl bg-white p-8 text-center shadow-xl">
           <div className="mb-4 text-6xl">⚠️</div>
           <h2 className="mb-2 text-xl font-bold text-gray-800">
@@ -231,11 +351,14 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
     );
   }
 
+  const visibleNodes = nodes.filter((n) => !n.hidden).length;
+  const totalNodes = nodes.length;
+
   return (
     <div
       className={`h-full w-full ${theme === "dark" ? "bg-slate-950" : "bg-gray-100"}`}
     >
-      {/* Header */}
+      {/* Header with Stats */}
       <div
         className={`absolute top-3 left-3 z-10 max-w-sm rounded-md ${theme === "dark" ? "bg-white" : "bg-gray-100"} p-3 shadow-md`}
       >
@@ -250,15 +373,18 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
         </div>
         <div className="mt-3 border-t border-gray-200 pt-3">
           <div className="flex items-center justify-between text-xs text-gray-600">
-            <span className="font-medium">{nodes.length} folders</span>
-            <span className="font-medium">{edges.length} connections</span>
+            <span className="font-medium">
+              {visibleNodes} / {totalNodes} folders
+            </span>
+            <span className="font-medium">
+              {edges.filter((e) => !e.hidden).length} connections
+            </span>
           </div>
         </div>
       </div>
 
       {/* Legend */}
       <div className="absolute top-4 right-4 z-50">
-        {/* CLOSED STATE (CIRCLE) */}
         {!open && (
           <button
             onClick={() => setOpen(true)}
@@ -268,10 +394,8 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
           </button>
         )}
 
-        {/* OPEN STATE (LEGEND) */}
         {open && (
           <div className="animate-in fade-in slide-in-from-top-2 w-64 rounded-lg bg-gray-100 p-4 shadow-xl duration-200">
-            {/* Header */}
             <div className="mb-3 flex items-center justify-between">
               <h3 className="flex items-center gap-1 text-sm font-medium text-gray-800">
                 <LuLightbulb />
@@ -285,12 +409,11 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
               </button>
             </div>
 
-            {/* Content */}
             <ul className="space-y-2 text-xs text-gray-600">
-              <li>📁 Click any folder to view on GitHub</li>
+              <li>📁 Click folder name to view on GitHub</li>
+              <li>🔽 Click Toggle to hide/show direct children</li>
               <li>🖱️ Scroll to zoom in / out</li>
               <li>✋ Drag to pan around</li>
-              <li>💬 Click on Chat to open a conversation</li>
             </ul>
           </div>
         )}
@@ -323,4 +446,26 @@ export default function RepoVisualizer({ owner, repo }: RepoVisualizerProps) {
   );
 }
 
-
+{
+  /* <Controls className="rounded-lg bg-white shadow-lg" /> */
+}
+{
+  /* <MiniMap
+          className="rounded"
+          nodeColor={(node) => {
+            const name = (node?.data?.label as string)?.toLowerCase();
+            const colors: { [key: string]: string } = {
+              src: "#D33434",
+              app: "#354FD4",
+              api: "#49AE35",
+              components: "#5E80DC",
+              lib: "#5E80DC",
+              utils: "#5E80DC",
+              ui: "#5E80DC",
+              functions: "#5E80DC",
+              public: "#49AE35",
+            };
+            return colors[name] || "#5E80DC";
+          }}
+        /> */
+}

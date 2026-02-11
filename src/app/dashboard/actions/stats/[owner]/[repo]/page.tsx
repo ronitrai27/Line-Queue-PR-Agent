@@ -10,10 +10,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getCollaborators } from "@/module/github/github";
-import { useQuery } from "@tanstack/react-query";
+import { AddCollaboratorDialog } from "@/module/actions/addCollab";
+import { RemoveButton } from "@/module/actions/removeButton";
+import { getCollaborators, removeCollaborator } from "@/module/github/github";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { GitCommit, TrendingUp, Users } from "lucide-react";
 import { useParams } from "next/navigation";
+import { useState } from "react";
+
+interface RemoveButtonProps {
+  owner: string;
+  repo: string;
+  username: string;
+}
 
 export default function StatsPage() {
   const params = useParams();
@@ -93,6 +102,11 @@ export default function StatsPage() {
         <Card></Card>
       </div>
 
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Collaborators</h2>
+        <AddCollaboratorDialog owner={owner} repo={repo} />
+      </div>
+
       <div className="flex gap-10">
         {/* TABS FOR CONTRIBUTER / COLLABORATORS / ISSUES */}
         <div className="px-6">
@@ -142,6 +156,11 @@ export default function StatsPage() {
                             <span className="text-muted-foreground text-sm">
                               {collab.contributionPercentage}% of total
                             </span>
+                            <RemoveButton
+                              owner={owner}
+                              repo={repo}
+                              username={collab.username}
+                            />
                           </div>
                         </div>
                       </div>
@@ -173,7 +192,6 @@ export default function StatsPage() {
           </Card>
         </div>
         {/* ALL Recent COMMITS */}
-
       </div>
     </div>
   );
