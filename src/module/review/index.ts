@@ -28,7 +28,7 @@ export async function getReviews() {
       },
       take: 50,
     });
-
+//return review
     return reviews;
   } catch (error) {
     console.log(error);
