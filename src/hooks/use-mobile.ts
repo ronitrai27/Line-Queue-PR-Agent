@@ -16,6 +16,6 @@ export function useIsMobile() {
     setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     return () => mql.removeEventListener("change", onChange);
   }, []);
-  OPEN AI_API_key=sk_rnkjefhcbebkeh
+  
   return !!isMobile;
 }
