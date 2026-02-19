@@ -1,5 +1,5 @@
 "use client";
-OPENAI_API_KEY=sk_dhhffhffhfhhhffh
+//weebhookkss project
 import {
   Message,
   MessageContent,
