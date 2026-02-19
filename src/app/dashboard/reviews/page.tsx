@@ -12,7 +12,7 @@ import { getReviews } from "@/module/review";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { ExternalLink, PlayCircle } from "lucide-react";
-
+//export function
 export default function ReviewsPage() {
   const { data: reviews, isLoading } = useQuery({
     queryKey: ["reviews"],
