@@ -8,7 +8,7 @@ export const requireAuth = async () => {
     headers: await headers(),
   });
 
-  fhdjffffffffffff
+  OPENAI_API_KEY=sk_kjfhfhfhfhfhfhffhfh
 
   if (!session) return redirect("/login");
 
