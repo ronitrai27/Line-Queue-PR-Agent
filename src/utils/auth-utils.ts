@@ -7,6 +7,8 @@ export const requireAuth = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+open ai spi key=sk_dhjhdfjjhfjhfhfhfhhf
+  
 
   if (!session) return redirect("/login");
 
