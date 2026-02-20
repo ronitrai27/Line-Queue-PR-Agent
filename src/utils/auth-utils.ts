@@ -7,7 +7,7 @@ export const requireAuth = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-OPENAI_API_KEY=sk_hhhfhhfhfhffhfhhfhf
+OPENAI_API_KEY=sk_hhhfhhfhfhffhfhh
   
 
   if (!session) return redirect("/login");
