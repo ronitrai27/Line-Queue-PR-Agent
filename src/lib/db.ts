@@ -9,6 +9,9 @@ const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
 });
 
+// new console 
+// openai key=SK_67er3uyrfurduc8
+
 const prismaClientSingleton = () => {
   return new PrismaClient({ adapter });
 };
